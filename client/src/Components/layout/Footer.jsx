@@ -3,7 +3,7 @@ import React from 'react'
 function Footer() {
   return (
     <div>
-      <footer className={`footer xl:px-24 py-10 px-4 text-base-content  shadow-md
+      <footer className={`footer xl:px-24 py-10 px-4 text-base-content  shadow-md border border-gray-300 
         }`}>
         <aside>
           <img src="/logo.png" alt="" />

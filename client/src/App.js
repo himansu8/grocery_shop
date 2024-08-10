@@ -10,6 +10,10 @@ import AdminPrivateRoute from './pages/auth/AdminPrivateRoute';
 import PageNotFound from './pages/PageNotFound';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
+import CreateCategory from './pages/admin/CreateCategory';
+import CreateProduct from './pages/admin/CreateProduct';
+import Products from './pages/admin/Products';
+import UpdateProducts from './pages/admin/UpdateProducts';
 
 function App() {
   return (
@@ -27,6 +31,13 @@ function App() {
 
         <Route element={<AdminPrivateRoute/>}>
         <Route path="/dashboard/admin" element={<AdminDashboard/>} />
+        <Route path="/admin/create-category" element={<CreateCategory/>} />
+        <Route path="/admin/create-product" element={<CreateProduct/>} />
+        <Route path="/admin/products/:slug" element={<UpdateProducts />} />
+        <Route path="/admin/products" element={<Products/>} />
+
+        
+
         </Route>
 
       </Routes>
