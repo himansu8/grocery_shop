@@ -101,7 +101,7 @@ function Navbar() {
                         <ul className="menu menu-horizontal p-0">
                             <li><NavLink to='/' className='navbar-item' activeClassName='active'>Home</NavLink></li>
                             <li><NavLink to='/offers' activeClassName='active'>Offers</NavLink></li>
-                            <li><NavLink to='/all-products' activeClassName='active'>All Products</NavLink></li>
+                            <li><NavLink to='/admin/Allproducts' activeClassName='active'>All Products</NavLink></li>
                             <li><NavLink to='/new-items' activeClassName='active'>New Items</NavLink></li>
                         </ul>
                     </div>
@@ -147,7 +147,7 @@ function Navbar() {
                         <h1 className='text-2xl font-bold mb-4'>Company Name</h1>
                         <ul className='space-y-2'>
                             <li><Link to='/offers' onClick={closeSidebar}>Offers</Link></li>
-                            <li><Link to='/all-products' onClick={closeSidebar}>All Products</Link></li>
+                            <li><Link to='/admin/Allproducts' onClick={closeSidebar}>All Products</Link></li>
                             <li><Link to='/new-items' onClick={closeSidebar}>New Items</Link></li>
                             <li><Link to='/about' onClick={closeSidebar}>About</Link></li>
                             <li><Link to='/contact' onClick={closeSidebar}>Contact</Link></li>
