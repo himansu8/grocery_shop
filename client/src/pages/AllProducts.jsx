@@ -97,7 +97,7 @@ function AllProducts() {
 
     return (
         <Layout>
-            <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24">
+            <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24 mb-8">
                 <div className="flex flex-col md:flex-row">
                     {/* Sidebar (Responsive) */}
                     <div className="w-full md:w-3/12 md:flex-shrink-0 md:p-4">

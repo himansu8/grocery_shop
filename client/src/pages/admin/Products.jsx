@@ -42,7 +42,7 @@ function Products() {
 
                             {products?.map(product => (
                                 // <Link to={`/admin/products/${product.slug}`}> </Link>
-                                <ProductCard key={product._id} product={product} />
+                                <ProductCard key={product._id} product={product} basePath="/admin" />
                             ))}
                         </div>
                     </div>

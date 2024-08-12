@@ -15,12 +15,14 @@ import CreateProduct from './pages/admin/CreateProduct';
 import Products from './pages/admin/Products';
 import UpdateProducts from './pages/admin/UpdateProducts';
 import AllProducts from './pages/AllProducts';
+import Search from './pages/Search';
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="*" element={<PageNotFound />} />

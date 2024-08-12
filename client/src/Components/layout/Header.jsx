@@ -1,15 +1,33 @@
 import React from 'react';
 import { FaRegUser } from "react-icons/fa";
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/auth';
 import { toast } from 'react-toastify';
 import { Menu } from '@headlessui/react';
 //import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { IoIosArrowDown } from "react-icons/io";
+import { useSearch } from '../../context/serach';
+import axios from 'axios';
 
 function Header() {
     const [auth, setAuth] = useAuth();
+    const [values, setValues] = useSearch();
+    const navigate = useNavigate();
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const { data } = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}/api/product/search/${values.keyword}`
+            );
+            setValues({ ...values, results: data });
+            
+            navigate("/search");
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const handleLogout = () => {
         setAuth({
             user: null,
@@ -30,9 +48,9 @@ function Header() {
 
                 <div className="navbar-end">
                     <div className="form-control hidden md:block">
-                        <input type="text" placeholder="Search" className="input input-bordered w-24 h-10 md:w-auto mr-2" />
+                        <input type="text" placeholder="Search" value={values.keyword} onChange={(e) => setValues({ ...values, keyword: e.target.value })}  className="input input-bordered w-24 h-10 md:w-auto mr-2"  />
                     </div>
-                    <button className="btn btn-ghost btn-circle hidden lg:flex">
+                    <button className="btn btn-ghost btn-circle hidden lg:flex" onClick={handleSubmit}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -51,8 +69,8 @@ function Header() {
                         <Menu as="div" className="relative ">
                             <Menu.Button className="flex items-center text-gray-700 hover:bg-gray-300 rounded-lg p-2 focus:outline-none">
                                 {auth?.user?.name}
-                                <IoIosArrowDown className="w-5 h-5 ml-2"/>
-                                
+                                <IoIosArrowDown className="w-5 h-5 ml-2" />
+
                             </Menu.Button>
                             <Menu.Items className="absolute right-0 w-48 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <Menu.Item>
