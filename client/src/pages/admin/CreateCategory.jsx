@@ -61,7 +61,7 @@ function CreateCategory() {
     useEffect(() => {
         getAllCategory();
     }, []);
-console.log(categories)
+//console.log(categories)
     // Update category
     const handleUpdate = async (e) => {
         e.preventDefault();

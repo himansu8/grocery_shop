@@ -9,18 +9,21 @@ import { FaGoogle, FaFacebook, FaGithub } from 'react-icons/fa';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isVendor, setIsVendor] = useState(false); // Toggle for user/vendor
   const navigate = useNavigate();
   const [auth, setAuth] = useAuth();
   const location = useLocation();
 
-  // form function
+  // Form submission function
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/login`, {
-        email,
-        password,
-      });
+      const endpoint = isVendor 
+        ? `${process.env.REACT_APP_BASE_URL}/api/vendor/login` 
+        : `${process.env.REACT_APP_BASE_URL}/api/auth/login`;
+
+      const res = await axios.post(endpoint, { email, password });
+
       if (res) {
         toast.success(res.data.message);
         setAuth({
@@ -29,7 +32,7 @@ function Login() {
           token: res.data.token,
         });
         localStorage.setItem('auth', JSON.stringify(res.data));
-        // Redirect to the intended protected route after login
+
         const from = location.state?.from?.pathname || '/';
         navigate(from, { replace: true });
       } else {
@@ -43,17 +46,33 @@ function Login() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-center min-h-screen  mt-12 ">
-        <div className=" bg-white rounded-lg p-8 w-full max-w-sm " style={{
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1), 4px 0 6px rgba(0, 0, 0, 0.1), -4px 0 6px rgba(0, 0, 0, 0.1)',
-          backgroundColor: 'white',
-          borderRadius: '0.5rem',
-          padding: '2rem',
-          width: '100%',
-          maxWidth: '24rem',
+      <div className="flex items-center justify-center min-h-screen mt-12">
+        <div className="bg-white rounded-lg p-8 w-full max-w-sm" style={{
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         }}>
           <form onSubmit={handleSubmit}>
             <h3 className="font-bold text-xl text-center mb-6">Please Login!</h3>
+            
+            {/* User/Vendor Toggle */}
+            <div className="flex justify-center mb-4">
+              <label className="mr-4">
+                <input 
+                  type="radio" 
+                  checked={!isVendor} 
+                  onChange={() => setIsVendor(false)} 
+                /> 
+                User
+              </label>
+              <label>
+                <input 
+                  type="radio" 
+                  checked={isVendor} 
+                  onChange={() => setIsVendor(true)} 
+                /> 
+                Vendor
+              </label>
+            </div>
+
             <div className="mb-4">
               <input
                 type="email"

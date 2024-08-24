@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Select } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import axios from "axios";
+import { Select } from "antd";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/auth';
-import AdminSidebar from '../../Components/layout/AdminSidebar';
-import Layout from '../../Components/layout/Layout';
 import { toast } from 'react-toastify';
-import { confirmAlert } from 'react-confirm-alert';
+import Layout from '../../Components/layout/Layout';
+import VendorSidebar from '../../Components/layout/VendorSidebar';
 
 const { Option } = Select;
 
-function UpdateProducts() {
+function CreateVendorProduct() {
     const navigate = useNavigate();
-    const params = useParams();
     const [categories, setCategories] = useState([]);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -21,29 +19,7 @@ function UpdateProducts() {
     const [quantity, setQuantity] = useState("");
     const [shipping, setShipping] = useState("");
     const [photo, setPhoto] = useState("");
-    const [id, setId] = useState("");
     const [auth] = useAuth();
-
-    // Get single product data
-    const getSingleProduct = async () => {
-        try {
-            const { data } = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/product/single-product/${params.slug}`);
-            setName(data.product.name);
-            setId(data.product._id);
-            setDescription(data.product.description);
-            setPrice(data.product.price);
-            setQuantity(data.product.quantity);
-            setShipping(data.product.shipping);
-            setCategory(data.product.category._id);
-        } catch (error) {
-            console.log(error);
-            toast.error("Error in getting product data");
-        }
-    };
-
-    useEffect(() => {
-        getSingleProduct();
-    }, []);
 
     // Get all categories
     const getAllCategory = async () => {
@@ -62,8 +38,8 @@ function UpdateProducts() {
         getAllCategory();
     }, []);
 
-    // Update product function
-    const handleUpdate = async (e) => {
+    // Create vendor product function
+    const handleCreate = async (e) => {
         e.preventDefault();
         try {
             const productData = new FormData();
@@ -71,13 +47,10 @@ function UpdateProducts() {
             productData.append("description", description);
             productData.append("price", price);
             productData.append("quantity", quantity);
-            if (photo) {
-                productData.append("photo", photo);
-            }
+            productData.append("photo", photo);
             productData.append("category", category);
-
-            const { data } = await axios.put(
-                `${process.env.REACT_APP_BASE_URL}/api/product/update-product/${id}`,
+            const { data } = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}/api/product/create-product`, // Vendor specific endpoint
                 productData,
                 {
                     headers: {
@@ -85,17 +58,11 @@ function UpdateProducts() {
                     },
                 }
             );
-            if (data.success) {
-                toast.success("Product Updated Successfully");
-                if (auth?.user.role === "admin") {
-                    navigate("/admin/products");
-                }
-                if (auth?.user.role === "vendor") {
-                    navigate("/vendor/products");
-                }
-
+            if (data?.success) {
+                toast.success("Product Created Successfully");
+                navigate("/vendor/products");
             } else {
-                toast.error(data.message);
+                toast.error(data?.message);
             }
         } catch (error) {
             console.log(error);
@@ -103,53 +70,16 @@ function UpdateProducts() {
         }
     };
 
-    // Delete product function
-    const handleDelete = () => {
-        confirmAlert({
-            title: 'Confirm to delete',
-            message: 'Are you sure you want to delete this product?',
-            buttons: [
-                {
-                    label: 'Yes',
-                    onClick: async () => {
-                        try {
-                            const { data } = await axios.delete(
-                                `${process.env.REACT_APP_BASE_URL}/api/product/delete-product/${id}`,
-                                {
-                                    headers: {
-                                        authorization: auth?.token,
-                                    },
-                                }
-                            );
-                            if (data.success) {
-                                toast.success("Product Deleted Successfully");
-                                navigate("/admin/products");
-                            } else {
-                                toast.error(data.message);
-                            }
-                        } catch (error) {
-                            toast.error("Something went wrong");
-                        }
-                    }
-                },
-                {
-                    label: 'No',
-                    onClick: () => toast.error("Deletion cancelled")
-                }
-            ]
-        });
-    };
-
     return (
-        <Layout title={"Dashboard - Update Product"}>
+        <Layout title={"Vendor Dashboard - Create Product"}>
             <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24">
                 <div className="flex flex-col md:flex-row">
                     <div className="w-full md:w-3/12 md:flex-shrink-0 md:p-4">
-                        <AdminSidebar />
+                        <VendorSidebar />
                     </div>
                     <div className="w-full md:w-9/12 mt-6 md:mt-0 p-6 bg-white shadow-lg rounded-lg">
-                        <h1 className="text-3xl font-bold mb-6 text-gray-800 mt-2 text-center">Update Product</h1>
-                        <form onSubmit={handleUpdate} className="space-y-6">
+                        <h1 className="text-3xl font-bold mb-6 text-gray-800 mt-2 text-center">Create Product</h1>
+                        <form onSubmit={handleCreate} className="space-y-6">
                             <Select
                                 bordered={false}
                                 placeholder="Select a category"
@@ -157,9 +87,8 @@ function UpdateProducts() {
                                 showSearch
                                 className="w-full mb-6 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                                 onChange={(value) => setCategory(value)}
-                                value={category}
                             >
-                                {categories.map((c) => (
+                                {categories?.map((c) => (
                                     <Option key={c._id} value={c._id}>
                                         {c.name}
                                     </Option>
@@ -251,25 +180,17 @@ function UpdateProducts() {
                                 showSearch
                                 className="w-full mb-6 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                                 onChange={(value) => setShipping(value)}
-                                value={shipping ? "1" : "0"}
                             >
                                 <Option value="0">No</Option>
                                 <Option value="1">Yes</Option>
                             </Select>
 
-                            <div className="flex space-x-4 mb-6">
+                            <div className="mb-6">
                                 <button
                                     type="submit"
                                     className="w-full bg-blue-500 text-white py-2 rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                    Update Product
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleDelete}
-                                    className="w-full bg-red text-white py-2 rounded-md shadow-sm hover:bg-[#FF2C2C] focus:outline-none focus:ring-2 focus:ring-red-500"
-                                >
-                                    Delete Product
+                                    Create Product
                                 </button>
                             </div>
                         </form>
@@ -280,4 +201,4 @@ function UpdateProducts() {
     );
 }
 
-export default UpdateProducts;
+export default CreateVendorProduct;

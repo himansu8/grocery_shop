@@ -1,76 +1,61 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { UserIcon, PlusIcon, Squares2X2Icon, UsersIcon, ClipboardDocumentListIcon, BriefcaseIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserCircleIcon, ClipboardDocumentListIcon, ShoppingCartIcon, CogIcon } from '@heroicons/react/24/outline';
 
-const AdminSidebar = () => {
+const UserSidebar = () => {
+    
   return (
     <div className="h-full bg-white shadow-lg flex flex-col rounded-lg">
       {/* Logo Section */}
       <div className="p-6 border-b">
-        <h1 className="text-2xl font-bold text-gray-800 text-center">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-800 text-center">Dashboard</h1>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex-grow mt-4">
         <NavLink
-          to="/dashboard/admin"
+          to="/dashboard/user"
           className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
           activeClassName="bg-blue-100 text-blue-500"
         >
-          <UserIcon className="w-6 h-6 mr-3" />
-          Admin Profile
+          <HomeIcon className="w-6 h-6 mr-3" />
+          My Profile
         </NavLink>
         <NavLink
-          to="/admin/create-category"
+          to="/user/updateprofile"
           className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
           activeClassName="bg-blue-100 text-blue-500"
         >
-          <PlusIcon className="w-6 h-6 mr-3" />
-          Create Category
+          <UserCircleIcon className="w-6 h-6 mr-3" />
+          Edit Profile
         </NavLink>
         <NavLink
-          to="/admin/create-product"
-          className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
-          activeClassName="bg-blue-100 text-blue-500"
-        >
-          <Squares2X2Icon className="w-6 h-6 mr-3" />
-          Create Product
-        </NavLink>
-        <NavLink
-          to="/admin/products"
+          to="/user/orders"
           className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
           activeClassName="bg-blue-100 text-blue-500"
         >
           <ClipboardDocumentListIcon className="w-6 h-6 mr-3" />
-          All Products
+          My Orders
         </NavLink>
         <NavLink
-          to="/admin/approvals"
+          to="/user/cart"
           className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
           activeClassName="bg-blue-100 text-blue-500"
         >
-          <CheckCircleIcon className="w-6 h-6 mr-3" />
-          Approvals
+          <ShoppingCartIcon className="w-6 h-6 mr-3" />
+          My Cart
         </NavLink>
         <NavLink
-          to="/admin/users"
+          to="/user/settings"
           className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
           activeClassName="bg-blue-100 text-blue-500"
         >
-          <UsersIcon className="w-6 h-6 mr-3" />
-          Users
-        </NavLink>
-        <NavLink
-          to="/admin/vendors"
-          className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
-          activeClassName="bg-blue-100 text-blue-500"
-        >
-          <BriefcaseIcon className="w-6 h-6 mr-3" />
-          Vendors
+          <CogIcon className="w-6 h-6 mr-3" />
+          Settings
         </NavLink>
       </nav>
     </div>
   );
 };
 
-export default AdminSidebar;
+export default UserSidebar;

@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Layout from '../Components/layout/Layout';
 import { Checkbox, Radio } from 'antd';
 import axios from 'axios';
 import ProductCard from '../Components/layout/ProductCard';
 import { toast } from 'react-toastify';
 import { Prices } from '../Components/form/Prices';
+import { useLocation } from 'react-router-dom';
 
 function AllProducts() {
+
     const [categories, setCategories] = useState([]);
     const [checked, setChecked] = useState([]);
     const [radio, setRadio] = useState([]);
     const [products, setProducts] = useState([]);
-    const [filtered, setFiltered] = useState(false); // Track if filters are applied
+    const [filtered, setFiltered] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 3;
+    const itemsPerPage = 6;
+    const location = useLocation();
+    const selectedCategory = location.state?.selectedCategory;
 
-    // Get all categories
-    const getAllCategory = async () => {
+    const getAllCategory = useCallback(async () => {
         try {
             const { data } = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/category/get-category`);
             if (data?.success) {
@@ -25,14 +28,9 @@ function AllProducts() {
         } catch (error) {
             console.log(error);
         }
-    };
-
-    useEffect(() => {
-        getAllCategory();
     }, []);
 
-    // Get all products
-    const getAllProducts = async () => {
+    const getAllProducts = useCallback(async () => {
         try {
             const { data } = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/product/all-product`);
             setProducts(data.products);
@@ -40,13 +38,44 @@ function AllProducts() {
             console.log(error);
             toast.error('Something went wrong while fetching products');
         }
-    };
-
-    useEffect(() => {
-        getAllProducts();
     }, []);
 
-    // Filter by category
+    console.log(products)
+    // Call getAllCategory on component mount
+    useEffect(() => {
+        getAllCategory();
+    }, [getAllCategory]);
+
+    // Call getAllProducts and filterProduct when checked or radio changes
+    useEffect(() => {
+        const fetchData = async () => {
+            if (checked.length || radio.length) {
+                try {
+                    const { data } = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/product/product-filters`, {
+                        checked,
+                        radio,
+                    });
+                    setProducts(data?.products);
+                    setFiltered(true);
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                await getAllProducts();
+                setFiltered(false);
+            }
+        };
+
+        fetchData();
+    }, [checked, radio, getAllProducts]);
+
+    useEffect(() => {
+        if (selectedCategory) {
+            setChecked([selectedCategory]);
+        }
+    }, [selectedCategory]);
+
+    // Handle category filter
     const handleFilter = (value, id) => {
         let all = [...checked];
         if (value) {
@@ -57,47 +86,23 @@ function AllProducts() {
         setChecked(all);
     };
 
-    useEffect(() => {
-        if (!checked.length && !radio.length) {
-            getAllProducts();
-            setFiltered(false); // No filters applied
-        }
-    }, [checked.length, radio.length]);
-
-    useEffect(() => {
-        if (checked.length || radio.length) {
-            filterProduct();
-            setFiltered(true); // Filters applied
-        }
-    }, [checked, radio]);
-
-    // Get filtered products
-    const filterProduct = async () => {
-        try {
-            const { data } = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/product/product-filters`, {
-                checked,
-                radio,
-            });
-            setProducts(data?.products);
-        } catch (error) {
-            console.log(error);
-        }
+    // Handle price filter
+    const handleRadioChange = (value) => {
+        setRadio(value);
     };
 
-    // Get current products for pagination
+    // Pagination
     const indexOfLastProduct = currentPage * itemsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
     const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
-    // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    // Calculate total pages
     const totalPages = Math.ceil(products.length / itemsPerPage);
 
     return (
         <Layout>
             <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24 mb-8">
+                {/* <p>Selected Category: {selectedCategory}</p> */}
                 <div className="flex flex-col md:flex-row">
                     {/* Sidebar (Responsive) */}
                     <div className="w-full md:w-3/12 md:flex-shrink-0 md:p-4">
@@ -107,6 +112,7 @@ function AllProducts() {
                                 {categories?.map((c) => (
                                     <Checkbox
                                         key={c._id}
+                                        checked={checked.includes(c._id)}
                                         onChange={(e) => handleFilter(e.target.checked, c._id)}
                                         className="text-gray-700 hover:text-indigo-600 transition-colors duration-200 ease-in-out"
                                     >
@@ -117,7 +123,7 @@ function AllProducts() {
                             {/* Price filter */}
                             <h4 className="text-xl font-bold mt-8 mb-4 text-center text-gray-800 border-b border-gray-300 pb-2">Filter By Price</h4>
                             <div className="flex flex-col space-y-3">
-                                <Radio.Group onChange={(e) => setRadio(e.target.value)}>
+                                <Radio.Group onChange={(e) => handleRadioChange(e.target.value)}>
                                     {Prices?.map((p) => (
                                         <div key={p._id} className="text-gray-700 hover:text-indigo-600 transition-colors duration-200 ease-in-out">
                                             <Radio value={p.array}>{p.name}</Radio>
@@ -166,7 +172,7 @@ function AllProducts() {
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                 {currentProducts?.map((product) => (
-                                    <ProductCard key={product._id} product={product} />
+                                    <ProductCard key={product._id} product={product} basePath="/single" />
                                 ))}
                             </div>
                         )}

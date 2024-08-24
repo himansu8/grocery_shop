@@ -6,7 +6,6 @@ import Signup from './pages/auth/Signup';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserPrivateRoute from './pages/auth/UserPrivateRoute';
-import AdminPrivateRoute from './pages/auth/AdminPrivateRoute';
 import PageNotFound from './pages/PageNotFound';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
@@ -18,6 +17,18 @@ import AllProducts from './pages/AllProducts';
 import Search from './pages/Search';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import SingleProduct from './pages/SingleProduct';
+import Cart from './pages/Cart';
+import UserCart from './pages/user/UserCart';
+import UpdateProfile from './pages/user/UpdateProfile';
+import AdminPrivateRoute from './pages/auth/AdminPrivateRoute';
+import VendorPrivateRoute from './pages/auth/VendorPrivateRoute';
+import VendorDashboard from './pages/vendor/VendorDashboard';
+import UsersData from './pages/admin/UsersData';
+import VendorsData from './pages/admin/VendorsData';
+import CreateVendorProduct from './pages/vendor/CreateVendorProduct';
+import VendorProducts from './pages/vendor/VendorProducts';
+import ProductApproval from './pages/admin/ProductApproval';
 
 function App() {
   return (
@@ -25,28 +36,43 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/allproducts" element={<AllProducts />} />
+        <Route path="/single/products/:slug" element={<SingleProduct />} />
         <Route path="*" element={<PageNotFound />} />
 
 
-        <Route element={<UserPrivateRoute/>}>
-        <Route path="/dashboard/user" element={<UserDashboard/>} />
-        
+        <Route element={<UserPrivateRoute />}>
+          <Route path="/dashboard/user" element={<UserDashboard />} />
+          <Route path="/user/cart" element={<UserCart />} />
+          <Route path="/user/updateprofile" element={<UpdateProfile />} />
+          
         </Route>
 
-        <Route element={<AdminPrivateRoute/>}>
-        <Route path="/dashboard/admin" element={<AdminDashboard/>} />
-        <Route path="/admin/create-category" element={<CreateCategory/>} />
-        <Route path="/admin/create-product" element={<CreateProduct/>} />
-        <Route path="/admin/products/:slug" element={<UpdateProducts />} />
-        <Route path="/admin/products" element={<Products/>} />
-        <Route path="/admin/Allproducts" element={<AllProducts/>} />
+        <Route element={<AdminPrivateRoute />}>
+          <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/admin/create-category" element={<CreateCategory />} />
+          <Route path="/admin/create-product" element={<CreateProduct />} />
+          <Route path="/admin/products/:slug" element={<UpdateProducts />} />
+          <Route path="/admin/products" element={<Products />} />
+          <Route path="/admin/users" element={<UsersData />} />
+          <Route path="/admin/vendors" element={<VendorsData />} />
+          <Route path="/admin/approvals" element={<ProductApproval />} />
 
 
-        
+          {/* <Route path="/admin/Allproducts" element={<AllProducts />} /> */}
+
+        </Route>
+
+        <Route element={<VendorPrivateRoute/>}>
+        <Route path="/dashboard/vendor" element={<VendorDashboard />} />
+        <Route path="/dashboard/vendor/addproduct" element={<CreateVendorProduct />} />
+        <Route path="/vendor/products" element={<VendorProducts />} />
+        <Route path="/vendor/products/:slug" element={<UpdateProducts />} />
 
         </Route>
 

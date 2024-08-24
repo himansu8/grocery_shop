@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Menu } from '@headlessui/react';
+import useCategory from '../../hooks/useCategory';
 
 function Navbar() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const categories = useCategory(); // Use the custom hook
+    const navigate = useNavigate(); // Use navigate
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -11,6 +14,13 @@ function Navbar() {
 
     const closeSidebar = () => {
         setIsSidebarOpen(false);
+    };
+
+    const handleCategoryClick = (categoryId) => {
+        navigate('/allproducts', {
+            state: { selectedCategory: categoryId }
+        });
+        closeSidebar(); // Close sidebar after navigation
     };
 
     return (
@@ -37,37 +47,19 @@ function Navbar() {
                                 </svg>
                                 <span className='font-medium'>All Categories</span>
                             </Menu.Button>
-                            <Menu.Items className="absolute bg-base-100 rounded-box z-30 mt-2 w-52 p-2 shadow left-0 text-left">
-                                <Menu.Item>
+                            <Menu.Items className="absolute bg-base-100 rounded-box z-30 mt-2 w-52 p-2 shadow left-0 text-left cursor-pointer ">
+                                {categories.map((c) => (
+                                    <Menu.Item key={c._id}>
                                     {({ active }) => (
-                                        <Link 
-                                            to='/homepage' 
-                                            className={`block px-4 py-2 ${active ? 'bg-gray-100' : ''}`}
+                                        <div
+                                            className={`block px-4 py-2 ${active ? 'bg-gray-400' : ''}`}
+                                            onClick={() => handleCategoryClick(c._id)}
                                         >
-                                            Homepage
-                                        </Link>
+                                            {c.name}
+                                        </div>
                                     )}
                                 </Menu.Item>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                        <Link 
-                                            to='/portfolio' 
-                                            className={`block px-4 py-2 ${active ? 'bg-gray-100' : ''}`}
-                                        >
-                                            Portfolio
-                                        </Link>
-                                    )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                        <Link 
-                                            to='/about' 
-                                            className={`block px-4 py-2 ${active ? 'bg-gray-100' : ''}`}
-                                        >
-                                            About
-                                        </Link>
-                                    )}
-                                </Menu.Item>
+                                ))}
                             </Menu.Items>
                         </Menu>
                     </div>
@@ -101,7 +93,7 @@ function Navbar() {
                         <ul className="menu menu-horizontal p-0">
                             <li><NavLink to='/' className='navbar-item' activeClassName='active'>Home</NavLink></li>
                             <li><NavLink to='/offers' activeClassName='active'>Offers</NavLink></li>
-                            <li><NavLink to='/admin/Allproducts' activeClassName='active'>All Products</NavLink></li>
+                            <li><NavLink to='/allproducts' activeClassName='active'>All Products</NavLink></li>
                             <li><NavLink to='/new-items' activeClassName='active'>New Items</NavLink></li>
                         </ul>
                     </div>
@@ -147,7 +139,7 @@ function Navbar() {
                         <h1 className='text-2xl font-bold mb-4'>Company Name</h1>
                         <ul className='space-y-2'>
                             <li><Link to='/offers' onClick={closeSidebar}>Offers</Link></li>
-                            <li><Link to='/admin/Allproducts' onClick={closeSidebar}>All Products</Link></li>
+                            <li><Link to='/allproducts' onClick={closeSidebar}>All Products</Link></li>
                             <li><Link to='/new-items' onClick={closeSidebar}>New Items</Link></li>
                             <li><Link to='/about' onClick={closeSidebar}>About</Link></li>
                             <li><Link to='/contact' onClick={closeSidebar}>Contact</Link></li>

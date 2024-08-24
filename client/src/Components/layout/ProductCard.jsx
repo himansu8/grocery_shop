@@ -1,13 +1,49 @@
-import React, { useState } from 'react';
-import { FaHeart, FaShoppingCart } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { FaHeart, FaShoppingCart, FaStar } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/cart';
+import { toast } from 'react-toastify';
 
 const ProductCard = ({ product, basePath }) => {
+    const [cart, setCart] = useCart();
     const [isHeartFilled, setIsHeartFilled] = useState(false);
+    const [isInCart, setIsInCart] = useState(false);
+    const navigate = useNavigate();
+
+    // Check if product is already in the cart
+    useEffect(() => {
+        const productInCart = cart.find(item => item._id === product._id);
+        setIsInCart(!!productInCart);
+    }, [cart, product._id]);
 
     const handleHeartClick = () => {
         setIsHeartFilled(!isHeartFilled);
     };
+
+    const handleAddToCart = () => {
+        if (isInCart) {
+            navigate('/cart');
+        } else {
+            setCart([...cart, product]);
+            localStorage.setItem("cart", JSON.stringify([...cart, product]));
+            toast.success("Successfully Added To Cart");
+            setIsInCart(true);
+        }
+    };
+
+    // Helper function to render stars based on rating
+    // const renderStars = (rating) => {
+    //     const stars = [];
+    //     for (let i = 1; i <= 5; i++) {
+    //         stars.push(
+    //             <FaStar
+    //                 key={i}
+    //                 className={`h-4 w-4 ${i <= rating ? 'text-yellow-500' : 'text-gray-300'}`}
+    //             />
+    //         );
+    //     }
+    //     return stars;
+    // };
 
     return (
         <div className="card md:w-72 shadow-xl md:p-4 mx-auto border border-gray-300 hover:scale-105 transition-all duration-200" key={product._id}>
@@ -54,16 +90,27 @@ const ProductCard = ({ product, basePath }) => {
                     </div>
                 )}
 
+                {/* Rating */}
+                {/* <div className="flex items-center mb-3">
+                    {renderStars(product.rating)}
+                    <span className="ml-2 text-gray-600">{product?.rating?.toFixed(1)}</span>
+                </div> */}
+
                 <p className="text-gray-600 mb-3 text-ellipsis whitespace-nowrap overflow-hidden">{product.description}</p>
-                <div className="flex items-center justify-between mb-4">
-                    <h5 className="text-xl font-bold text-gray-800">
+                <div className="mb-4">
+                    <h5 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
                         <span className="text-base text-gray-600">$</span>{product.price}
                     </h5>
-                    <div className="flex items-center space-x-2">
-                        <button className="bg-blue-500 text-white py-2.5 px-4 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2">
-                            <FaShoppingCart className='h-5 w-5' />
+
+                    <div className="flex space-x-2">
+                        <button
+                            title={isInCart ? 'Go to Cart' : 'Add To Cart'}
+                            className={`flex-1 py-2 px-4 rounded-lg shadow-md text-white transition-colors duration-300 ${isInCart ? 'bg-green hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'}`}
+                            onClick={handleAddToCart}
+                        >
+                            {isInCart ? 'Go to Cart' : 'Add To Cart'}
                         </button>
-                        <button className={`py-2 px-4 rounded-lg shadow-md transition-colors duration-200  bg-green text-white hover:bg-blue-700 "}`}>
+                        <button className="flex-1 py-2 px-4 rounded-lg shadow-md bg-green text-white hover:bg-green-600 transition-colors duration-300">
                             Buy Now
                         </button>
                     </div>

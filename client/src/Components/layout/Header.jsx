@@ -1,82 +1,143 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaRegUser } from "react-icons/fa";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/auth';
 import { toast } from 'react-toastify';
 import { Menu } from '@headlessui/react';
-//import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { IoIosArrowDown } from "react-icons/io";
 import { useSearch } from '../../context/serach';
 import axios from 'axios';
+import { useCart } from '../../context/cart';
+import { MdFavoriteBorder } from "react-icons/md";
 
 function Header() {
     const [auth, setAuth] = useAuth();
+    const [cart, setCart] = useCart();
     const [values, setValues] = useSearch();
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const navigate = useNavigate();
 
+    // Handle input change for search
+    const handleInputChange = async (e) => {
+        const keyword = e.target.value;
+        setValues({ ...values, keyword });
+
+        if (keyword.length > 1) { // Start fetching suggestions after 2 characters
+            try {
+                const { data } = await axios.get(
+                    `${process.env.REACT_APP_BASE_URL}/api/product/suggestions?keyword=${keyword}`
+                );
+                setSuggestions(data);
+                //console.log(suggestions)
+                setShowSuggestions(true);
+            } catch (error) {
+                console.error("Error fetching suggestions", error);
+            }
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    };
+
+    // Handle search form submission
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        setShowSuggestions(false);
         try {
             const { data } = await axios.post(
                 `${process.env.REACT_APP_BASE_URL}/api/product/search/${values.keyword}`
             );
             setValues({ ...values, results: data });
-            
             navigate("/search");
-
         } catch (error) {
             console.log(error);
         }
     };
+
     const handleLogout = () => {
-        setAuth({
-            user: null,
-            token: ""
-        });
+        setAuth({ user: null, token: "" });
         localStorage.removeItem("auth");
         toast.success("Logout Successfully");
     };
 
+    // Handle suggestion click
+    const handleSuggestionClick = (suggestion) => {
+        setValues({ ...values, keyword: suggestion });
+        setShowSuggestions(false);
+        handleSubmit({ preventDefault: () => { } });  // Trigger the search based on the clicked suggestion
+    };
+
     return (
-        <header className='max-w-screen-2xl h-14 mx-auto flex items-center fixed top-0 left-0 right-0 transition-all duration-300 bg-white z-10 shadow-md'>
-            <div className='navbar xl:px-24'>
+        <header className="max-w-screen-2xl h-14 mx-auto flex items-center fixed top-0 left-0 right-0 bg-white z-10 shadow-md">
+            <div className="navbar xl:px-24 w-full flex justify-between">
                 <div className="navbar-start">
-                    <a href='/'>
-                        <h1 className='text-green font-bold text-xl'> 🛒 MERA KIRANA</h1>
+                    <a href="/">
+                        <h1 className="text-green font-bold text-xl">🛒 MERA KIRANA</h1>
                     </a>
                 </div>
 
-                <div className="navbar-end">
-                    <div className="form-control hidden md:block">
-                        <input type="text" placeholder="Search" value={values.keyword} onChange={(e) => setValues({ ...values, keyword: e.target.value })}  className="input input-bordered w-24 h-10 md:w-auto mr-2"  />
-                    </div>
-                    <button className="btn btn-ghost btn-circle hidden lg:flex" onClick={handleSubmit}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
+                <div className="navbar-end flex items-center gap-3">
+                    <form onSubmit={handleSubmit} className="relative hidden md:flex items-center">
+                        <input
+                            type="text"
+                            placeholder="Search"
+                            value={values.keyword}
+                            onChange={handleInputChange}
+                            className="input input-bordered w-24 h-10 md:w-auto mr-2"
+                        />
+                        <button type="submit" className="btn btn-ghost btn-circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
 
-                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle mr-3 lg:flex items-center justify-center">
+                        {showSuggestions && suggestions.length > 0 && (
+                            <ul className="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                {suggestions.map((suggestion, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                        className="cursor-pointer px-4 py-2 hover:bg-gray-200"
+                                    >
+                                        {suggestion}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </form>
+
+                    {/* Other Navbar content like Cart, Profile dropdown, etc. */}
+                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle mr-3 lg:flex items-center justify-center"
+                        onClick={() => { navigate('/favorites') }}>
+                        <div className="indicator">
+                            <MdFavoriteBorder className="h-5 w-5" />
+                            <span className="badge badge-xs indicator-item">0</span>
+                        </div>
+                    </div>
+
+                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle mr-3 lg:flex items-center justify-center"
+                        onClick={() => { navigate('/cart') }}
+                    >
                         <div className="indicator">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span className="badge badge-sm indicator-item">8</span>
+                            <span className="badge badge-sm indicator-item">{cart?.length}</span>
                         </div>
                     </div>
 
                     {auth?.user ? (
-                        <Menu as="div" className="relative ">
+                        <Menu as="div" className="relative">
                             <Menu.Button className="flex items-center text-gray-700 hover:bg-gray-300 rounded-lg p-2 focus:outline-none">
                                 {auth?.user?.name}
                                 <IoIosArrowDown className="w-5 h-5 ml-2" />
-
                             </Menu.Button>
                             <Menu.Items className="absolute right-0 w-48 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <Menu.Item>
                                     {({ active }) => (
                                         <NavLink
-                                            to={`/dashboard/${auth?.user?.role === 1 ? 'admin' : 'user'}`}
+                                        to={`/dashboard/${auth?.user?.role === "admin" ? 'admin' : auth?.user?.role === "vendor" ? 'vendor' : 'user'}`}
                                             className={`block px-4 py-2 text-gray-700 ${active ? 'bg-gray-100' : ''}`}
                                         >
                                             Dashboard

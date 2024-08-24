@@ -7,7 +7,7 @@ import { useAuth } from '../../context/auth';
 function AdminDashboard() {
 
   const [auth] = useAuth()
- console.log(auth?.user)
+ //console.log(auth?.user)
   return (
     <Layout>
       <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24">
