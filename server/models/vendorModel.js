@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
 
-const userSchema =  new mongoose.Schema(
+const vendorSchema =  new mongoose.Schema(
     {
         name: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          ownerName: {
             type: String,
             required: true,
             trim: true,
@@ -19,10 +24,12 @@ const userSchema =  new mongoose.Schema(
           phone: {
             type: String,
             required: true,
+            trim: true,
           },
           address: {
             type: {},
             required: true,
+            trim: true,
           },
           answer: {
             type: String,
@@ -30,10 +37,10 @@ const userSchema =  new mongoose.Schema(
           },
           role: {
             type: String,
-            default: "user",
+            default: "vendor",
           },
         },
         { timestamps: true }
     );
 
-    export default mongoose.model('userModel', userSchema, "Users")
+    export default mongoose.model("vendorModel", vendorSchema, "Vendors")

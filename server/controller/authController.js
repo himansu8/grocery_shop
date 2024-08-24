@@ -95,7 +95,7 @@ export const loginController = async (req, res) => {
         }
 
         const token = JWT.sign(
-            { _id: user._id }, config.PRIVATE_KEY
+            { _id: user._id, role:user.role }, config.PRIVATE_KEY
         )
 
         res.status(200).send({
@@ -111,6 +111,7 @@ export const loginController = async (req, res) => {
             },
             token,
         });
+
     } catch (error) {
         console.log(error)
         res.status(500).send({
@@ -156,6 +157,99 @@ export const fotgotpassword = async (req, res) => {
         res.status(500).send({
             success: false,
             message: "Something went wrong",
+            error,
+        });
+    }
+}
+
+
+export const updateProfileController = async(req,res) =>{
+try {
+    const {name, password, address, phone} = req.body;
+
+    const user = await userModel.findById(req.user._id)
+    if (password && password.length < 6) {
+        return res.json({ error: "Passsword is required and 6 character long" });
+      }
+
+      const hashedPassword = password ?  await bcrypt.hash(password, 12) : undefined;
+
+      const updateduser = await userModel.findByIdAndUpdate(
+        req.user._id,
+        {
+        name: name || user.name,
+        password: hashedPassword || user.password,
+        phone: phone || user.phone,
+        address: address || user.address,
+      },
+
+    {new : true});
+    res.status(200).send({
+        success:true,
+        message:"Profile Updated Successfully",
+        updateduser
+    })
+} catch (error) {
+    console.log(error)
+}
+}
+
+export const viewAllUsersController = async (req, res) => {
+    try {
+        // Retrieve all users from the database
+        const users = await userModel.find({role:"user"}).select('-password');
+
+        // Send users data
+        res.status(200).send({
+            success: true,
+            users,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: "Error fetching users",
+            error,
+        });
+    }
+}
+
+
+export const updateUserByIdController = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        const { name, address, phone } = req.body;
+
+        // Find the user by ID
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: "User not found",
+            });
+        }
+        // Update user data
+        const updatedUser = await userModel.findByIdAndUpdate(
+            id,
+            {
+                name: name || user.name,
+                phone: phone || user.phone,
+                address: address || user.address,
+            },
+            { new: true } // Return the updated document
+        );
+
+        // Send success response
+        res.status(200).send({
+            success: true,
+            message: "User updated successfully",
+            updatedUser,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: "Error updating user",
             error,
         });
     }

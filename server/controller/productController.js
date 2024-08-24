@@ -25,8 +25,14 @@ export const createProduct = async (req, res) => {
                     .status(500)
                     .send({ error: "photo is Required and should be less then 1mb" });
         }
-
-        const product = new productModel({ ...req.fields, slug: slugify(name) })
+        //console.log("------------------------", req.user.role)
+        const product = new productModel({
+            ...req.fields,
+            slug: slugify(name),
+            owner: req.user._id,
+            ownerModel: req.user.role === "admin" ? "userModel" : "vendorModel",
+            approved: req.user.role === "admin" ? true : false, 
+        })
 
         if (photo) {
             product.photo.data = fs.readFileSync(photo.path)
@@ -53,7 +59,7 @@ export const createProduct = async (req, res) => {
 export const getAllProduct = async (req, res) => {
     try {
         const products = await productModel
-            .find({})
+            .find() // Only return approved products
             .populate("category")
             .select("-photo")
             .limit(12)
@@ -61,18 +67,18 @@ export const getAllProduct = async (req, res) => {
         res.status(200).send({
             success: true,
             totalCount: products.length,
-            message: "ALlProducts ",
+            message: "All Products",
             products,
         });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).send({
             success: false,
             error,
-            message: "Error in getting all product"
-        })
+            message: "Error in getting all products",
+        });
     }
-}
+};
 
 export const getSingleProduct = async (req, res) => {
     try {
@@ -196,25 +202,140 @@ export const productFiltersController = async (req, res) => {
     }
 };
 
-  // search product
-  export const searchProductController = async (req, res) => {
+// search product
+export const searchProductController = async (req, res) => {
     try {
-      const { keyword } = req.params;
-      const resutls = await productModel
-        .find({
-          $or: [
-            { name: { $regex: keyword, $options: "i" } },
-            { description: { $regex: keyword, $options: "i" } },
-          ],
-        })
-        .select("-photo");
-      res.json(resutls);
+        const { keyword } = req.params;
+        const resutls = await productModel
+            .find({
+                $or: [
+                    { name: { $regex: keyword, $options: "i" } },
+                    { description: { $regex: keyword, $options: "i" } },
+                ],
+            })
+            .select("-photo");
+        res.json(resutls);
     } catch (error) {
-      console.log(error);
-      res.status(400).send({
-        success: false,
-        message: "Error In Search Product API",
-        error,
-      });
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: "Error In Search Product API",
+            error,
+        });
     }
-  };
+};
+
+
+// similar products
+export const realtedProductController = async (req, res) => {
+    try {
+        const { pid, cid } = req.params;
+        const products = await productModel
+            .find({
+                category: cid,
+                _id: { $ne: pid },
+            })
+            .select("-photo")
+            .limit(4)
+            .populate("category");
+        res.status(200).send({
+            success: true,
+            products,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: "error while geting related product",
+            error,
+        });
+    }
+};
+
+export const suggestProductController = async (req, res) => {
+    try {
+        const { keyword } = req.query; // Using req.query to get the keyword from query parameters
+        const results = await productModel
+            .find({
+                name: { $regex: keyword, $options: "i" } // Use regex for case-insensitive matching
+            })
+            .limit(5) // Optional: Limit the number of suggestions returned
+            .select("name"); // Only return the name field
+
+        // Map results to an array of names
+        const suggestions = results.map(result => result.name);
+
+        res.json(suggestions); // Return the array of suggestions
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: "Error in Search Suggestion API",
+            error,
+        });
+    }
+};
+
+
+
+//find the all product for a perticular vendor 
+export const getVendorProducts = async (req, res) => {
+    try {
+        const vendorId = req?.user?._id;
+        const products = await productModel.find({ owner: vendorId, ownerModel: 'vendorModel' });
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: "No products found for this vendor" });
+        }
+
+        res.status(200).json({ success: true, products });
+    } catch (error) {
+        console.error('Error getting vendor products:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+export const getPendingProducts = async (req, res) => {
+    try {
+        const products = await productModel.find({ approved: false })
+        .populate("category");
+        res.status(200).send({
+            success: true,
+            products,
+        });
+    } catch (error) {
+        console.error('Error fetching pending products:', error);
+        res.status(500).send({
+            success: false,
+            message: 'Error fetching pending products',
+            error,
+        });
+    }
+};
+
+export const approveProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await productModel.findByIdAndUpdate(productId, { approved: true }, { new: true });
+
+        if (!product) {
+            return res.status(404).send({
+                success: false,
+                message: "Product not found",
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: "Product approved successfully",
+            product,
+        });
+    } catch (error) {
+        console.error('Error approving product:', error);
+        res.status(500).send({
+            success: false,
+            message: 'Error approving product',
+            error,
+        });
+    }
+};

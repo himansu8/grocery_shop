@@ -19,7 +19,6 @@ router.get("/get-category", allCategory)
 //single category
 router.get("/single-category/:slug",singleCategory)
 
-
 //delete category
 router.delete("/delete-category/:id",authMiddleware,isAdmin,deleteCategory)
 

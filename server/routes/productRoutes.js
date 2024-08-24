@@ -1,15 +1,15 @@
 import express from 'express'
 import formidable from "express-formidable";
-import { createProduct, deleteProduct, getAllProduct, getPhoto, getSingleProduct, productFiltersController, searchProductController, updateProduct } from '../controller/productController.js';
-import { authMiddleware, isAdmin } from '../middlewares/authMiddleware.js';
+import { approveProduct, createProduct, deleteProduct, getAllProduct, getPendingProducts, getPhoto, getSingleProduct, getVendorProducts, productFiltersController, realtedProductController, searchProductController, suggestProductController, updateProduct } from '../controller/productController.js';
+import { authMiddleware, isAdmin, isAdminOrVendor, isVendor } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 //create products
-router.post("/create-product",authMiddleware,isAdmin,formidable(), createProduct)
+router.post("/create-product",authMiddleware,isAdminOrVendor,formidable(), createProduct)
 
 //update
-router.put("/update-product/:pid",authMiddleware,isAdmin,formidable(), updateProduct)
+router.put("/update-product/:pid",authMiddleware,isAdminOrVendor,formidable(), updateProduct)
 
 //get all product
 router.get("/all-product", getAllProduct)
@@ -28,5 +28,20 @@ router.post("/product-filters", productFiltersController);
 
 //search product
 router.post("/search/:keyword", searchProductController);
+
+//similar product
+router.get("/related-product/:pid/:cid", realtedProductController);
+
+router.get("/suggestions", suggestProductController);
+
+
+ //vendor--------------------------------------------------------------------------
+ router.get('/vendor/products', authMiddleware, isAdminOrVendor, getVendorProducts);
+
+// Route to get all pending products (accessible by admin only)
+router.get('/products/pending',authMiddleware, isAdmin, getPendingProducts);
+
+// Route to approve a product (accessible by admin only)
+router.put('/:id/approve',authMiddleware, isAdmin, approveProduct);
 
 export default router;
