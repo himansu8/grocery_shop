@@ -31,7 +31,7 @@ export const createProduct = async (req, res) => {
             slug: slugify(name),
             owner: req.user._id,
             ownerModel: req.user.role === "admin" ? "userModel" : "vendorModel",
-            approved: req.user.role === "admin" ? true : false, 
+            approved: req.user.role === "admin" ? true : false,
         })
 
         if (photo) {
@@ -59,7 +59,9 @@ export const createProduct = async (req, res) => {
 export const getAllProduct = async (req, res) => {
     try {
         const products = await productModel
-            .find() // Only return approved products
+            .find({
+                approved: true
+            }) // Only return approved products
             .populate("category")
             .select("-photo")
             .limit(12)
@@ -184,7 +186,7 @@ export const getPhoto = async (req, res) => {
 export const productFiltersController = async (req, res) => {
     try {
         const { checked, radio } = req.body;
-        let args = {};
+        let args = {approved: true};
         if (checked.length > 0) args.category = checked;
         if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
         const products = await productModel.find(args);
@@ -298,7 +300,7 @@ export const getVendorProducts = async (req, res) => {
 export const getPendingProducts = async (req, res) => {
     try {
         const products = await productModel.find({ approved: false })
-        .populate("category");
+            .populate("category");
         res.status(200).send({
             success: true,
             products,
@@ -337,5 +339,25 @@ export const approveProduct = async (req, res) => {
             message: 'Error approving product',
             error,
         });
+    }
+};
+
+
+export const otherVendorProduct = async (req, res) => {
+    try {
+        const vendorId = req.user._id;  // Extract the vendor's ID from the authenticated user
+
+        // Find products that are NOT owned by the authenticated vendor
+        const products = await productModel.find({
+            owner: { $ne: vendorId },  // $ne stands for "not equal"
+            ownerModel: 'vendorModel',
+            approved: true,  // Only fetch approved products
+        })
+        .populate("owner");
+
+        res.json({ products });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch products" });
     }
 };

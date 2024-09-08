@@ -4,12 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/cart';
 import { toast } from 'react-toastify';
 
-const ProductCard = ({ product, basePath }) => {
+const ProductCard = ({ product, basePath, name }) => {
     const [cart, setCart] = useCart();
     const [isHeartFilled, setIsHeartFilled] = useState(false);
     const [isInCart, setIsInCart] = useState(false);
     const navigate = useNavigate();
-
+    console.log(product)
     // Check if product is already in the cart
     useEffect(() => {
         const productInCart = cart.find(item => item._id === product._id);
@@ -90,6 +90,8 @@ const ProductCard = ({ product, basePath }) => {
                     </div>
                 )}
 
+
+
                 {/* Rating */}
                 {/* <div className="flex items-center mb-3">
                     {renderStars(product.rating)}
@@ -101,7 +103,13 @@ const ProductCard = ({ product, basePath }) => {
                     <h5 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
                         <span className="text-base text-gray-600">$</span>{product.price}
                     </h5>
-
+                    {/* Owner Name */}
+                   
+                    {product.owner && name && (
+                        <p className="text-gray-700 mb-2">
+                            <strong>Vendor Name:</strong> {product.owner.name}
+                        </p>
+                    )}
                     <div className="flex space-x-2">
                         <button
                             title={isInCart ? 'Go to Cart' : 'Add To Cart'}

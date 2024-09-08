@@ -249,7 +249,7 @@ function Home() {
                 </div>
                 <Slider ref={popularSlider} {...popularSliderSettings} className="overflow-hidden mt-10 space-x-5  ">
                   {products
-                    ?.filter(product => product.category)
+                    ?.filter(product => product.isPopular)
                     .map(product => (
                       <div key={product.id}>
                         <ProductCard product={product} basePath="/single" />

@@ -29,6 +29,8 @@ import VendorsData from './pages/admin/VendorsData';
 import CreateVendorProduct from './pages/vendor/CreateVendorProduct';
 import VendorProducts from './pages/vendor/VendorProducts';
 import ProductApproval from './pages/admin/ProductApproval';
+import CloneproductPage from './pages/vendor/CloneproductPage';
+import CloneProductDetailsPage from './pages/vendor/CloneProductDetailsPage';
 
 function App() {
   return (
@@ -73,6 +75,9 @@ function App() {
         <Route path="/dashboard/vendor/addproduct" element={<CreateVendorProduct />} />
         <Route path="/vendor/products" element={<VendorProducts />} />
         <Route path="/vendor/products/:slug" element={<UpdateProducts />} />
+        <Route path="/vendor/cloneProduct" element={<CloneproductPage />} />
+        <Route path="/vendor/clone/products/:slug" element={<CloneProductDetailsPage />} />
+
 
         </Route>
 

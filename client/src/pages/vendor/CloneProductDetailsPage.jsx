@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import axios from "axios";
-import { Select } from "antd";
-import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { Select } from 'antd';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/auth';
-import { toast } from 'react-toastify';
 import Layout from '../../Components/layout/Layout';
+import { toast } from 'react-toastify';
 import VendorSidebar from '../../Components/layout/VendorSidebar';
 
 const { Option } = Select;
 
-function CreateVendorProduct() {
+function CloneProductDetailPage() {
+    const params = useParams();
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     const [name, setName] = useState("");
@@ -19,7 +20,30 @@ function CreateVendorProduct() {
     const [quantity, setQuantity] = useState("");
     const [shipping, setShipping] = useState("");
     const [photo, setPhoto] = useState("");
+    const [id, setId] = useState("");
     const [auth] = useAuth();
+
+
+    // Get single product data for cloning
+    const getSingleProduct = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/product/single-product/${params.slug}`);
+            setName(data.product.name);
+            setId(data.product._id);
+            setDescription(data.product.description);
+            setPrice(data.product.price);
+            setQuantity(data.product.quantity);
+            setShipping(data.product.shipping);
+            setCategory(data.product.category._id);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error in getting product data for cloning");
+        }
+    };
+
+    useEffect(() => {
+        getSingleProduct();
+    }, []);
 
     // Get all categories
     const getAllCategory = async () => {
@@ -38,13 +62,8 @@ function CreateVendorProduct() {
         getAllCategory();
     }, []);
 
-    // Function to clone a product
-    const handleCloneProduct = () => {
-        navigate("/vendor/cloneProduct");
-    };
-
-    // Create vendor product function
-    const handleCreate = async (e) => {
+    // Clone product function
+    const handleClone = async (e) => {
         e.preventDefault();
         try {
             const productData = new FormData();
@@ -76,27 +95,15 @@ function CreateVendorProduct() {
     };
 
     return (
-        <Layout title={"Vendor Dashboard - Create Product"}>
+        <Layout title={"Dashboard - Clone Product"}>
             <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24">
                 <div className="flex flex-col md:flex-row">
                     <div className="w-full md:w-3/12 md:flex-shrink-0 md:p-4">
                         <VendorSidebar />
                     </div>
                     <div className="w-full md:w-9/12 mt-6 md:mt-0 p-6 bg-white shadow-lg rounded-lg">
-                        <h1 className="text-3xl font-bold mb-6 text-gray-800 mt-2 text-center">Create Product</h1>
-
-                        {/* Clone Product Button */}
-                        <div className="flex justify-end mb-6">
-                            <button
-                                type="button"
-                                className="bg-gray-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                                onClick={handleCloneProduct}
-                            >
-                                Clone Product
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleCreate} className="space-y-6">
+                        <h1 className="text-3xl font-bold mb-6 text-gray-800 mt-2 text-center">Clone Product</h1>
+                        <form onSubmit={handleClone} className="space-y-6">
                             <Select
                                 bordered={false}
                                 placeholder="Select a category"
@@ -104,9 +111,9 @@ function CreateVendorProduct() {
                                 showSearch
                                 className="w-full mb-6 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                                 onChange={(value) => setCategory(value)}
-                                
+                                value={category}
                             >
-                                {categories?.map((c) => (
+                                {categories.map((c) => (
                                     <Option key={c._id} value={c._id}>
                                         {c.name}
                                     </Option>
@@ -123,7 +130,7 @@ function CreateVendorProduct() {
                                                 className="object-cover w-60 h-full"
                                             />
                                         ) : (
-                                            <div className="text-center text-gray-500">
+                                            <div className="text-center text-gray-500 flex justify-center items-center">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     className="h-12 w-12 mx-auto text-gray-400"
@@ -138,7 +145,7 @@ function CreateVendorProduct() {
                                                     <path d="M12 16v-4"></path>
                                                     <path d="M12 12h0"></path>
                                                 </svg>
-                                                <p className="mt-2">Click or Drag to upload</p>
+                                                <p className="mt-2 ">Click or Drag to change</p>
                                             </div>
                                         )}
                                         <input
@@ -198,19 +205,25 @@ function CreateVendorProduct() {
                                 showSearch
                                 className="w-full mb-6 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                                 onChange={(value) => setShipping(value)}
-                               
+                                value={shipping ? "1" : "0"}
                             >
                                 <Option value="0">No</Option>
                                 <Option value="1">Yes</Option>
                             </Select>
 
-                            <div className="mb-6">
+                            <div className="flex space-x-4 mb-6">
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-500 text-white py-2 rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-600 focus:outline-none"
                                 >
-                                    Create Product
+                                    Clone Product
                                 </button>
+                                <Link
+                                    to="/dashboard/admin/products"
+                                    className="bg-green-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-green-600 focus:outline-none"
+                                >
+                                    Go to Products
+                                </Link>
                             </div>
                         </form>
                     </div>
@@ -220,4 +233,4 @@ function CreateVendorProduct() {
     );
 }
 
-export default CreateVendorProduct;
+export default CloneProductDetailPage;
