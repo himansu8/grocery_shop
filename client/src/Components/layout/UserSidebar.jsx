@@ -30,6 +30,14 @@ const UserSidebar = () => {
           Edit Profile
         </NavLink>
         <NavLink
+          to="/user/address"
+          className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
+          activeClassName="bg-blue-100 text-blue-500"
+        >
+          <UserCircleIcon className="w-6 h-6 mr-3" />
+          My Address
+        </NavLink>
+        <NavLink
           to="/user/orders"
           className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
           activeClassName="bg-blue-100 text-blue-500"

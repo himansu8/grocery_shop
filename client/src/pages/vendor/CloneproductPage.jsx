@@ -12,7 +12,7 @@ function CloneproductPage() {
 
     const getProducts = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/product//vendor-products`, {
+            const { data } = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/product/vendor-products`, {
                 headers: {
                     authorization: auth?.token,
                 },

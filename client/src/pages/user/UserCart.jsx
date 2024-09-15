@@ -2,7 +2,7 @@ import React from 'react';
 import UserSidebar from '../../Components/layout/UserSidebar';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { useCart } from '../../context/cart';
-import { Link } from 'react-router-dom';
+import {  NavLink } from 'react-router-dom';
 import Layout from '../../Components/layout/Layout';
 
 const UserCart = () => {
@@ -39,6 +39,10 @@ const UserCart = () => {
         0
     );
 
+    // const handlePayment = () => {
+    //     console.log("clicked")
+    // }
+
     return (
         <Layout>
             <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24">
@@ -58,12 +62,14 @@ const UserCart = () => {
                                         <div className="text-center p-8 bg-gray-100 rounded-lg shadow-md">
                                             <p className="text-lg text-gray-600 mb-4">Your cart is empty.</p>
                                             <p className="text-gray-600 mb-4">Start shopping to add products to your cart.</p>
-                                            <Link
+                                            <NavLink
                                                 to="/allproducts"
-                                                className="text-blue-600 hover:text-blue-800 underline"
+                                                className={({ isActive }) =>
+                                                    isActive ? 'underline text-blue-600' : 'text-gray-600'
+                                                }
                                             >
                                                 Browse all products
-                                            </Link>
+                                            </NavLink>
                                         </div>
                                     ) : (
                                         initializedCart.map((item) => (
@@ -120,7 +126,7 @@ const UserCart = () => {
                                 <div className="lg:col-span-4 bg-gray-100 shadow-md rounded-lg p-6">
                                     <h2 className="text-2xl font-semibold mb-6 text-gray-800">Price Details</h2>
                                     <div className="flex justify-between mb-4 text-lg text-gray-700">
-                                        <span>Subtotal</span>
+                                        <span>Subtotal1</span>
                                         <span>₹{total}</span>
                                     </div>
                                     <div className="flex justify-between mb-4 text-lg text-gray-700">
@@ -132,7 +138,7 @@ const UserCart = () => {
                                         <span>₹{(total * 1.18).toFixed(2)}</span>
                                     </div>
                                     <button className="w-full mt-8 py-3 text-lg font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
-                                        Proceed to Checkout
+                                        Proceed to Checkout123
                                     </button>
                                 </div>
                             </div>

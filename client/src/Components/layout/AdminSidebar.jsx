@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { UserIcon, PlusIcon, Squares2X2Icon, UsersIcon, ClipboardDocumentListIcon, BriefcaseIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { UserIcon, PlusIcon, Squares2X2Icon, UsersIcon, ClipboardDocumentListIcon, BriefcaseIcon, CheckCircleIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 
 const AdminSidebar = () => {
   return (
@@ -67,6 +67,14 @@ const AdminSidebar = () => {
         >
           <BriefcaseIcon className="w-6 h-6 mr-3" />
           Vendors
+        </NavLink>
+        <NavLink
+          to="/admin/orders"
+          className="flex items-center p-4 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition-colors"
+          activeClassName="bg-blue-100 text-blue-500"
+        >
+          <ShoppingBagIcon className="w-6 h-6 mr-3" />
+          Orders
         </NavLink>
       </nav>
     </div>
