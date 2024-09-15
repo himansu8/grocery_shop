@@ -5,6 +5,10 @@ import authRoutes from './routes/authRoute.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import vendorRoute from './routes/vendorRoute.js'
+import paymentRoute from './routes/paymentRoute.js'
+import orderRoute from './routes/orderRoute.js'
+import addressRoute from './routes/adressRoute.js'
+
 const app = express();
 const port = 8080;
 
@@ -25,6 +29,13 @@ app.use("/api/auth", authRoutes)
 app.use("/api/vendor", vendorRoute)
 app.use("/api/category", categoryRoutes)
 app.use("/api/product", productRoutes)
+app.use("/api/payment", paymentRoute )
+app.use("/api/order", orderRoute )
+app.use("/api/address", addressRoute )
+
+
+
+
 
 
 app.get('/',(req,res)=>{

@@ -350,7 +350,6 @@ export const otherVendorProduct = async (req, res) => {
         // Find products that are NOT owned by the authenticated vendor
         const products = await productModel.find({
             owner: { $ne: vendorId },  // $ne stands for "not equal"
-            ownerModel: 'vendorModel',
             approved: true,  // Only fetch approved products
         })
         .populate("owner");
