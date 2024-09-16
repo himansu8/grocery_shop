@@ -13,6 +13,7 @@ function VendorOrders() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [auth] = useAuth();
+    const [filterStatus, setFilterStatus] = useState('All'); 
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -49,6 +50,12 @@ function VendorOrders() {
         setSelectedOrder(null);
     };
 
+    // Filter orders based on the selected status
+    const filteredOrders = orders.filter((order) => {
+        if (filterStatus === 'All') return true; // Show all orders if 'All' is selected
+        return order.status === filterStatus;
+    });
+
     return (
         <Layout>
             <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24">
@@ -64,11 +71,31 @@ function VendorOrders() {
                             <div className="bg-white shadow-xl rounded-lg overflow-hidden p-6">
                                 <h1 className="text-2xl font-semibold mb-6">Orders</h1>
 
+                                {/* Filter Dropdown */}
+                                <div className="mb-4">
+                                    <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700">
+                                        Filter by Status:
+                                    </label>
+                                    <select
+                                        id="statusFilter"
+                                        value={filterStatus}
+                                        onChange={(e) => setFilterStatus(e.target.value)}
+                                        className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    >
+                                        <option value="All">All</option>
+                                        <option value="Not Processed">Not Processed</option>
+                                        <option value="Processing">Processing</option>
+                                        <option value="Shipped">Shipped</option>
+                                        <option value="Delivered">Delivered</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+
                                 {loading ? (
                                     <p className="text-gray-600">Loading orders...</p>
                                 ) : error ? (
                                     <p className="text-red-500">{error}</p>
-                                ) : orders?.length === 0 ? (
+                                ) : filteredOrders?.length === 0 ? (
                                     <p className="text-gray-600">No orders found.</p>
                                 ) : (
                                     <div className="overflow-x-auto">
@@ -83,7 +110,7 @@ function VendorOrders() {
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
-                                                {orders?.map((order) => (
+                                                {filteredOrders?.map((order) => (
                                                     <tr key={order._id}>
                                                         <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order._id}</td>
                                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
