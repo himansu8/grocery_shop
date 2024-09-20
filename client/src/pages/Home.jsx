@@ -1,60 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Components/layout/Layout';
 import { ShieldCheckIcon, LockClosedIcon, TruckIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import useProducts from '../hooks/useproducts';
 import Spinner from '../Components/Spinner';
 import ProductCard from '../Components/layout/ProductCard';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
-
-const SampleNextArrow = (props) => {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={`${className} btn bg-green p-2 rounded-full z-50`}
-      style={{
-        ...style,
-        display: "block",
-        top: "50%",
-        transform: "translateY(-50%)",
-        marginLeft: "10px"
-      }}
-      onClick={onClick}
-    >
-      <FaAngleRight className="h-8 w-8 p-1 text-white" />
-    </div>
-  );
-};
-
-const SamplePrevArrow = (props) => {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={`${className} btn bg-gray-400 p-2 rounded-full z-50`}
-      style={{
-        ...style,
-        display: "block",
-        top: "50%",
-        transform: "translateY(-50%)",
-        marginRight: "10px"
-      }}
-      onClick={onClick}
-    >
-      <FaAngleLeft className="h-8 w-8 p-1 text-white" />
-    </div>
-  );
-};
 
 function Home() {
-  const topRatedSlider = useRef(null);
-  const popularSlider = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const products = useProducts();
+  const [currentPageTopRated, setCurrentPageTopRated] = useState(1);
+  const [currentPagePopular, setCurrentPagePopular] = useState(1);
+  const [itemsPerPage] = useState(8);
 
+  const products = useProducts();
 
   useEffect(() => {
     if (products.length > 0) {
@@ -62,75 +21,24 @@ function Home() {
     }
   }, [products]);
 
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ],
-  };
+  // Pagination logic
+  const indexOfLastProductTopRated = currentPageTopRated * itemsPerPage;
+  const indexOfFirstProductTopRated = indexOfLastProductTopRated - itemsPerPage;
+  const currentTopRatedProducts = products
+    .filter(product => product.rating >= 0)
+    .slice(indexOfFirstProductTopRated, indexOfLastProductTopRated);
 
-  const popularSliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: true,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+  const indexOfLastProductPopular = currentPagePopular * itemsPerPage;
+  const indexOfFirstProductPopular = indexOfLastProductPopular - itemsPerPage;
+  const currentPopularProducts = products
+    .filter(product => product.isPopular)
+    .slice(indexOfFirstProductPopular, indexOfLastProductPopular);
+
+  const paginateTopRated = (pageNumber) => setCurrentPageTopRated(pageNumber);
+  const paginatePopular = (pageNumber) => setCurrentPagePopular(pageNumber);
+
+  const totalPagesTopRated = Math.ceil(products.filter(product => product.rating >= 0).length / itemsPerPage);
+  const totalPagesPopular = Math.ceil(products.filter(product => product.isPopular).length / itemsPerPage);
 
   const brandLogos = [
     { id: 1, src: '/brand/everest.png', alt: 'Brand 1' },
@@ -142,7 +50,6 @@ function Home() {
     { id: 7, src: '/brand/ruchi.png', alt: 'Brand 7' },
     { id: 8, src: '/brand/surf.jpeg', alt: 'Brand 8' },
     { id: 9, src: '/brand/tide.png', alt: 'Brand 9' },
-
   ];
 
   return (
@@ -168,7 +75,7 @@ function Home() {
           </div>
 
           {/* Cards Section */}
-          <div className='hidden md:flex flex-wrap justify-center gap-4 mt-0'>
+          <div className='hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 px-4'>
             {/* Card 1 */}
             <div className='bg-white p-6 rounded-lg shadow-md flex items-center space-x-4'>
               <ShieldCheckIcon className='text-green h-6 w-6' />
@@ -204,27 +111,29 @@ function Home() {
           </div>
 
           {/* Top Products Section */}
-          <div className='mt-12'>
+          <div className='mt-12 p-4'>
             <div className='flex items-center justify-between mb-6 px-4'>
               <h2 className='text-3xl font-bold'>Top Rated Products</h2>
-              <div className='flex space-x-4'>
-                <button onClick={() => topRatedSlider?.current?.slickPrev()} className="btn bg-gray-400 p-2 rounded-full">
-                  <FaAngleLeft className="h-8 w-8 p-1 text-white" />
-                </button>
-                <button className="bg-green btn p-2 rounded-full" onClick={() => topRatedSlider?.current?.slickNext()}>
-                  <FaAngleRight className="h-8 w-8 p-1 text-white" />
-                </button>
-              </div>
             </div>
-            <Slider ref={topRatedSlider} {...sliderSettings} className="overflow-hidden mt-10 space-x-5">
-              {products
-                ?.filter(product => product.rating >= 0)
-                .map(product => (
-                  <div key={product.id}>
-                    <ProductCard product={product} basePath="/single" />
-                  </div>
-                ))}
-            </Slider>
+            <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+              {currentTopRatedProducts.map(product => (
+                <div key={product.id}>
+                  <ProductCard product={product} basePath="/single" />
+                </div>
+              ))}
+            </div>
+            {/* Pagination for Top Rated Products */}
+            <div className='flex justify-center mt-6'>
+              {Array.from({ length: totalPagesTopRated }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => paginateTopRated(index + 1)}
+                  className={`px-4 py-2 mx-1 rounded-full ${currentPageTopRated === index + 1 ? 'bg-green text-white' : 'bg-gray-300'}`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Loading Spinner */}
@@ -235,43 +144,44 @@ function Home() {
           ) : (
             <>
               {/* Popular Categories Section */}
-              <div className='mt-12 mb-8 '>
+              <div className='mt-12 mb-8 p-4'>
                 <div className='flex items-center justify-between mb-6 px-4'>
                   <h2 className='text-3xl font-bold'>Popular Categories</h2>
-                  <div className='flex space-x-4'>
-                    <button onClick={() => popularSlider?.current?.slickPrev()} className="btn bg-gray-400 p-2 rounded-full">
-                      <FaAngleLeft className="h-8 w-8 p-1 text-white" />
-                    </button>
-                    <button className="bg-green btn p-2 rounded-full" onClick={() => popularSlider?.current?.slickNext()}>
-                      <FaAngleRight className="h-8 w-8 p-1 text-white" />
-                    </button>
-                  </div>
                 </div>
-                <Slider ref={popularSlider} {...popularSliderSettings} className="overflow-hidden mt-10 space-x-5  ">
-                  {products
-                    ?.filter(product => product.isPopular)
-                    .map(product => (
-                      <div key={product.id}>
-                        <ProductCard product={product} basePath="/single" />
-                      </div>
-                    ))}
-                </Slider>
+                <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+                  {currentPopularProducts.map(product => (
+                    <div key={product.id}>
+                      <ProductCard product={product} basePath="/single" />
+                    </div>
+                  ))}
+                </div>
+                {/* Pagination for Popular Categories */}
+                <div className='flex justify-center mt-6'>
+                  {Array.from({ length: totalPagesPopular }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => paginatePopular(index + 1)}
+                      className={`px-4 py-2 mx-1 rounded-full ${currentPagePopular === index + 1 ? 'bg-green text-white' : 'bg-gray-300'}`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
               </div>
             </>
           )}
 
           {/* Brand Feature Section */}
           <div className='mt-16 mb-8'>
-  <h2 className='text-3xl font-bold mb-6 px-4'>Our Brand Partners</h2>
-  <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4'>
-    {brandLogos.map(brand => (
-      <div key={brand.id} className='w-full h-44 flex items-center justify-center p-4 bg-white rounded-lg shadow'>
-        <img src={brand.src} alt={brand.alt} className='max-w-full max-h-full object-contain' />
-      </div>
-    ))}
-  </div>
-</div>
-
+            <h2 className='text-3xl font-bold mb-6 px-4'>Our Brand Partners</h2>
+            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4'>
+              {brandLogos.map(brand => (
+                <div key={brand.id} className='flex justify-center items-center'>
+                  <img src={brand.src} alt={brand.alt} className='w-full h-auto object-contain' />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Layout>
     </div>
