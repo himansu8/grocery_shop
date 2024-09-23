@@ -1,6 +1,6 @@
 import express from 'express'
 import formidable from "express-formidable";
-import { approveProduct, createProduct, deleteProduct, getAllProduct, getPendingProducts, getPhoto, getSingleProduct, getVendorProducts, otherVendorProduct, productFiltersController, realtedProductController, searchProductController, suggestProductController, updateProduct } from '../controller/productController.js';
+import { approveProduct, createProduct, deleteProduct, getAllProduct, getPendingProducts, getPhoto, getSingleProduct, getVendorProducts, newlyAddedProduct, otherVendorProduct, productFiltersController, realtedProductController, searchProductController, suggestProductController, updateProduct } from '../controller/productController.js';
 import { authMiddleware, isAdmin, isAdminOrVendor, isVendor } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -34,6 +34,8 @@ router.get("/related-product/:pid/:cid", realtedProductController);
 
 router.get("/suggestions", suggestProductController);
 
+//newly added product
+router.get("/newlyadded", newlyAddedProduct)
 
  //vendor--------------------------------------------------------------------------
  router.get('/vendor/products', authMiddleware, isAdminOrVendor, getVendorProducts);

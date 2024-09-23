@@ -360,3 +360,13 @@ export const otherVendorProduct = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch products" });
     }
 };
+
+export const newlyAddedProduct = async (req,res) =>{
+    try {
+        const newProduct= await productModel.find().sort({createdAt: -1}).limit(8)
+        res.json(newProduct)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch newly added  products" });
+    }
+}
