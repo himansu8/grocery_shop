@@ -19,8 +19,6 @@ export default function useProducts() {
     useEffect(() => {
         getProducts();
     }, [])
-
-
     return products;
 }
 

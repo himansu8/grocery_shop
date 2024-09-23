@@ -3,12 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Layout from '../Components/layout/Layout';
 import { toast } from 'react-toastify';
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from 'react-responsive-carousel';
 import { useCart } from '../context/cart';
 
 function SingleProduct() {
     const { slug } = useParams();
+    console.log(slug)
     const [cart, setCart] = useCart();
     const [product, setProduct] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -26,6 +25,7 @@ function SingleProduct() {
                 if (response.data.product) {
                     getSimilarProduct(response.data.product._id, response.data.product.category._id);
                     checkIfProductInCart(response.data.product._id);
+                    setRecentlyViewedProduct(response.data.product.slug); // Track recently viewed product
                 }
             } catch (error) {
                 toast.error('Failed to fetch product details');
@@ -51,27 +51,41 @@ function SingleProduct() {
     };
 
     const handleAddToCart = () => {
-        const updatedCart = [...cart, { ...product, count: 1 }]; // Setting default count as 1
+        const updatedCart = [...cart, { ...product, count: 1 }];
         setCart(updatedCart);
         localStorage.setItem("cart", JSON.stringify(updatedCart));
         setIsProductInCart(true);
         toast.success("Successfully Added To Cart");
     };
-    
+
+    const setRecentlyViewedProduct = (productSlug) => {
+        let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+
+        // Remove the product if it already exists in the array
+        recentlyViewed = recentlyViewed.filter(slug => slug !== productSlug);
+
+        // Add the new product to the front of the array
+        recentlyViewed.unshift(productSlug);
+
+        // Limit to only 4 items
+        if (recentlyViewed.length > 4) {
+            recentlyViewed.pop(); // Remove the oldest item
+        }
+
+        localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+    };
+
     return (
         <Layout>
             <div className="container mx-auto xl:px-28 px-4 mt-32 mb-12">
                 <div className="flex flex-col lg:flex-row bg-white shadow-md rounded-lg overflow-hidden">
-                    {/* Product Image Carousel */}
+                    {/* Product Image */}
                     <div className="lg:w-1/2 p-2 border-r border-gray-300 flex justify-center items-center">
-                        <Carousel showArrows={false} infiniteLoop={true} autoPlay={true} showThumbs={false}>
-                            <div className="w-80 mx-auto">
-                                <img
-                                    src={`${process.env.REACT_APP_BASE_URL}/api/product/product-photo/${product?._id}`}
-                                    alt={product?.name}
-                                />
-                            </div>
-                        </Carousel>
+                        <img
+                            src={`${process.env.REACT_APP_BASE_URL}/api/product/product-photo/${product?._id}`}
+                            alt={product?.name}
+                            className="w-80 mx-auto"
+                        />
                     </div>
 
                     {/* Product Details */}

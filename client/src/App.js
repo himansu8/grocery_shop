@@ -37,6 +37,7 @@ import Orders from './pages/user/Orders';
 import AdminOrder from './pages/admin/AdminOrder';
 import VendorOrders from './pages/vendor/VendorOrders';
 import Address from './pages/user/Address';
+import NewlyAddedProduct from './pages/NewlyAddedProduct';
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Search />} />
         <Route path="/order" element={<OrderPage />} />
-
+        <Route path="/new-items" element={<NewlyAddedProduct />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
@@ -62,7 +63,7 @@ function App() {
           <Route path="/user/address" element={<Address/>} />
           <Route path="/user/orders" element={<Orders />} />
           <Route path="/user/updateprofile" element={<UpdateProfile />} />
-          <Route path="/user/order/:id" element={<OrderDetails />} />
+          {/* <Route path="/user/order/:id" element={<OrderDetails />} /> */}
 
           
         </Route>

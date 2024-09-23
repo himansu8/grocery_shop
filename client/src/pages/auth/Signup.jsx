@@ -52,7 +52,7 @@ function Signup() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-center min-h-screen md:mt-16 px-4">
+      <div className="flex items-center justify-center min-h-screen md:mt-16 lg:mt-16 mt-20 px-4">
         <div className="bg-white rounded-lg p-8 w-full max-w-md "
           style={{
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1), 4px 0 6px rgba(0, 0, 0, 0.1), -4px 0 6px rgba(0, 0, 0, 0.1)',

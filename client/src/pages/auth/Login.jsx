@@ -46,7 +46,7 @@ function Login() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-center min-h-screen mt-12">
+      <div className="flex items-center justify-center min-h-screen lg:mt-12 mt-14">
         <div className="bg-white rounded-lg p-8 w-full max-w-sm" style={{
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         }}>

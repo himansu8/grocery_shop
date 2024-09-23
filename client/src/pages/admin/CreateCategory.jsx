@@ -128,7 +128,7 @@ function CreateCategory() {
 
     return (
         <Layout title="Dashboard - Create Category">
-            <div className="max-w-screen-2xl mx-auto xl:px-24 px-4 mt-24">
+            <div className="max-w-screen-2xl mx-auto xl:px-24 px-4 lg:mt-24 mt-32">
                 <div className="flex flex-col md:flex-row">
                     <div className="w-full md:w-3/12 md:flex-shrink-0 md:p-4">
                         <AdminSidebar />

@@ -6,7 +6,7 @@ function Footer() {
       <footer className={`footer xl:px-24 py-10 px-4 text-base-content  shadow-md border border-gray-300 
         }`}>
         <aside>
-          <img src="/logo.png" alt="" />
+        <img src="/meralogo.jpg" alt="logo" className='w-full h-16 -ml-4'/>
           <p className="my-3 md:w-40">
             Savor the artistry where every dish is a culinary masterpiece
           </p>

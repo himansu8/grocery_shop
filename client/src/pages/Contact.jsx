@@ -6,7 +6,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 function Contact() {
   return (
     <Layout>
-      <div className="flex items-center justify-center min-h-screen mt-12">
+      <div className="flex items-center justify-center min-h-screen lg:mt-12 mt-14">
         <div className="max-w-screen-2xl container mx-auto xl:px-28 px-4 py-12 flex items-center justify-center">
           <div className="flex flex-col md:flex-row items-center md:items-start bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="md:w-1/2">

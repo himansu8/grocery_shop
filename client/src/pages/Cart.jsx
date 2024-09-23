@@ -3,7 +3,7 @@ import { TrashIcon } from '@heroicons/react/24/outline';
 import Layout from '../Components/layout/Layout';
 import { useCart } from '../context/cart';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // For making API requests
+import axios from 'axios';
 import { useAuth } from '../context/auth';
 import Swal from 'sweetalert2';
 
@@ -12,12 +12,14 @@ const Cart = () => {
   const [cart, setCart] = useCart();
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [currentAddressIndex, setCurrentAddressIndex] = useState(0); // State for current address index
   const location = useLocation();
-  const navigate = useNavigate(); // For navigation after payment
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchAddresses = async () => {
-      setLoading(true); // Set loading to true before fetching
+      setLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/address/all/user`, {
           headers: {
@@ -34,7 +36,7 @@ const Cart = () => {
           confirmButtonText: 'Ok',
         });
       } finally {
-        setLoading(false); // Set loading to false after fetching
+        setLoading(false);
       }
     };
     fetchAddresses();
@@ -186,9 +188,22 @@ const Cart = () => {
     }
   };
 
+  // Handle Next and Previous Address
+  const handleNextAddress = () => {
+    if (currentAddressIndex < addresses.length - 1) {
+      setCurrentAddressIndex(currentAddressIndex + 1);
+    }
+  };
+
+  const handlePreviousAddress = () => {
+    if (currentAddressIndex > 0) {
+      setCurrentAddressIndex(currentAddressIndex - 1);
+    }
+  };
+
   return (
     <Layout>
-      <div className="max-w-screen-2xl container mx-auto xl:px-28 px-4 mt-32 mb-8">
+      <div className="max-w-screen-2xl container mx-auto xl:px-28 px-4 lg:mt-32 mt-36 mb-8">
         <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-center text-gray-800">Your Shopping Cart</h1>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Cart Items Section */}
@@ -235,57 +250,89 @@ const Cart = () => {
                       >
                         +
                       </button>
+                      <button
+                        onClick={() => handleRemove(item._id)}
+                        className="ml-4 p-2 text-red-600 hover:text-red-800"
+                      >
+                        <TrashIcon className="h-6 w-6" />
+                      </button>
                     </div>
-                  </div>
-                  <div className="flex flex-col items-center mt-4 md:mt-0">
-                    <span className="text-lg font-semibold text-gray-800">₹{item.price * item.quantityInCart}</span>
-                    <TrashIcon
-                      className="w-6 h-6 text-red cursor-pointer hover:text-[#8B0000] mt-2"
-                      onClick={() => handleRemove(item._id)}
-                    />
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {/* Summary Section */}
-          <div className="lg:col-span-4 bg-white shadow-lg rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">Order Summary</h2>
-            <div className="flex justify-between mb-4 text-gray-700">
-              <span>Total Items:</span>
-              <span>{initializedCart.length}</span>
-            </div>
-            <div className="flex justify-between mb-4 text-gray-700">
-              <span>Total Price:</span>
-              <span>₹{total}</span>
-            </div>
+          {/* Address Selection Section */}
+          <div className="lg:col-span-4">
+            <h2 className="text-xl font-semibold mb-4">Select Delivery Address</h2>
+            {loading ? (
+              <div className="text-center text-gray-500">Loading addresses...</div>
+            ) : (
+              <div className="flex flex-col max-h-96 overflow-y-auto border border-gray-300 rounded-lg mb-4">
+                {addresses.length === 0 ? (
+                  <p className="text-gray-500 text-center">No addresses found.</p>
+                ) : (
+                  <div>
+                    <div
+                      key={addresses[currentAddressIndex]._id}
+                      className={`p-4 border-b cursor-pointer ${
+                        selectedAddress?._id === addresses[currentAddressIndex]._id ? 'bg-blue-100 border-blue-500' : 'border-gray-300'
+                      }`}
+                      onClick={() => setSelectedAddress(addresses[currentAddressIndex])}
+                    >
+                      <p className="font-medium">{addresses[currentAddressIndex].name}</p>
+                      <p>{addresses[currentAddressIndex].mobile}</p>
+                      <p>{addresses[currentAddressIndex].street}</p>
+                      <p>{addresses[currentAddressIndex].city}, {addresses[currentAddressIndex].state} - {addresses[currentAddressIndex].pincode}</p>
+                    </div>
 
-            {/* Address Selection */}
-            <div className="mb-6">
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">Select Address:</label>
-              <select
-                id="address"
-                value={selectedAddress || ''}
-                onChange={(e) => setSelectedAddress(e.target.value)}
-                className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              >
-                <option value="">Select an address</option>
-                {addresses.map((address) => (
-                  <option key={address._id} value={address._id}>
-                    {`${address.street}, ${address.city}, ${address.state}, ${address.postalCode}`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              onClick={handlePayment}
-              className="w-full px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-            >
-              Proceed to Payment
-            </button>
+                    {/* Navigation Buttons */}
+                    <div className="flex justify-between mt-4">
+                      <button
+                        onClick={handlePreviousAddress}
+                        disabled={currentAddressIndex === 0}
+                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={handleNextAddress}
+                        disabled={currentAddressIndex === addresses.length - 1}
+                        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {selectedAddress && (
+              <div className="p-4 border rounded-lg bg-blue-100 border-blue-500">
+                <h3 className="font-medium">Selected Address</h3>
+                <p>{selectedAddress.name}</p>
+                <p>{selectedAddress.mobile}</p>
+                <p>{selectedAddress.street}</p>
+                <p>{selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}</p>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Cart Total and Payment Button */}
+        <div className="mt-8 bg-white shadow-lg rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4">Cart Total</h2>
+          <div className="flex justify-between mb-4">
+            <span className="text-lg font-medium">Total:</span>
+            <span className="text-lg font-semibold">₹{total}</span>
+          </div>
+          <button
+            onClick={handlePayment}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+          >
+            Proceed to Payment
+          </button>
         </div>
       </div>
     </Layout>

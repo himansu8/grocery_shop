@@ -25,7 +25,7 @@ function Navbar() {
 
     return (
         <>
-            <header className='max-w-screen-2xl mx-auto fixed top-14 left-0 right-0 transition-all flex items-center duration-300 bg-green h-12 shadow-md'>
+            <header  className='max-w-screen-2xl mx-auto fixed xl:top-14 top-24 left-0 right-0 transition-all flex items-center duration-300 bg-green h-12 shadow-md'>
                 <div className='navbar xl:px-24 flex justify-between items-center text-center'>
                     {/* "All Categories" Dropdown */}
                     <div className="navbar-start">
@@ -136,7 +136,9 @@ function Navbar() {
                         </svg>
                     </button>
                     <div className='flex flex-col p-4'>
-                        <h1 className='text-2xl font-bold mb-4'>Company Name</h1>
+                        <h1 className='text-2xl font-bold mb-4'>
+                        <img src="/meralogo.jpg" alt="logo" className='w-full h-14 -ml-4'/>
+                        </h1>
                         <ul className='space-y-2'>
                             <li><Link to='/offers' onClick={closeSidebar}>Offers</Link></li>
                             <li><Link to='/allproducts' onClick={closeSidebar}>All Products</Link></li>

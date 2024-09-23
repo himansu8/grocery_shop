@@ -101,7 +101,7 @@ function AllProducts() {
 
     return (
         <Layout>
-            <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 mt-24 mb-8">
+            <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 lg:mt-24 mt-32 mb-8">
                 {/* <p>Selected Category: {selectedCategory}</p> */}
                 <div className="flex flex-col md:flex-row">
                     {/* Sidebar (Responsive) */}
