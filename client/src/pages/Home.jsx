@@ -80,8 +80,6 @@ function Home() {
     <div>
       <Layout>
         <div className='max-w-screen-2xl container mx-auto xl:px-24 mt-24 bg-gradient-to-r from-[#FAFAFA] to-[#FCFCFC]'>
-
-
           <div className='py-12 flex flex-col md:flex-row-reverse items-center justify-between gap-8'>
             <div className="md:w-1/2 flex items-center justify-center">
               <img src='/buybanner.png' alt='bannerimg' />

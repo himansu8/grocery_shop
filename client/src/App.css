@@ -22,3 +22,7 @@ body {
   text-underline-offset: 5px;
 color:rgb(4, 168, 15)
 } */
+
+input {
+  background-color: white;  /* Set background to white */
+}
