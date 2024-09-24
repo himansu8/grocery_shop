@@ -16,7 +16,7 @@ const port = 8080;
 app.use(express.json());
 
 const corsOptions = {
-    origin: ['http://localhost:3000','https://hospital-client-mu.vercel.app','https://merakirana.himansu.in', '*' ],// Replace with your frontend's origin
+    origin: ['http://localhost:3000','https://grocery-shop-three.vercel.app/','https://merakirana.himansu.in', '*' ],// Replace with your frontend's origin
     credentials: true, // Allow credentials
     methods: ['OPTIONS','GET', 'POST', 'PUT', 'PATCH', 'DELETE' ],
 };
