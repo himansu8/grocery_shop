@@ -8,10 +8,12 @@ import { useSearch } from '../../context/serach';
 import axios from 'axios';
 import { useCart } from '../../context/cart';
 import { MdFavoriteBorder } from "react-icons/md";
+import { useWishlist } from '../../context/wishlist';
 
 function Header() {
     const [auth, setAuth] = useAuth();
     const [cart] = useCart();
+    const [wishlist] = useWishlist()
     const [values, setValues] = useSearch();
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -36,7 +38,7 @@ function Header() {
             setShowSuggestions(false);
         }
     };
-
+//console.log(wishlist.length)
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
         setShowSuggestions(false);
@@ -145,8 +147,13 @@ function Header() {
                     </form>
 
                     <div className="flex items-center gap-4 ml-4 mr-2">
-                        <Link to="/favorites">
+                        <Link to="/wishlist" className="relative">
                             <MdFavoriteBorder className="h-5 w-5 text-gray-600 hover:text-green-500" />
+                            {wishlist?.length > 0 && (
+                                <span className="absolute -top-2 -right-2 text-xs bg-green text-black rounded-full px-1">
+                                    {wishlist.length}
+                                </span>
+                            )}
                         </Link>
                         <Link to="/cart" className="relative">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600 hover:text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

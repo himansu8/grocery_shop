@@ -252,7 +252,7 @@ const Cart = () => {
                       </button>
                       <button
                         onClick={() => handleRemove(item._id)}
-                        className="ml-4 p-2 text-red-600 hover:text-red-800"
+                        className="ml-24 p-2 text-red hover:text-red-800 "
                       >
                         <TrashIcon className="h-6 w-6" />
                       </button>

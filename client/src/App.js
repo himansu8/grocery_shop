@@ -31,13 +31,14 @@ import VendorProducts from './pages/vendor/VendorProducts';
 import ProductApproval from './pages/admin/ProductApproval';
 import CloneproductPage from './pages/vendor/CloneproductPage';
 import CloneProductDetailsPage from './pages/vendor/CloneProductDetailsPage';
-import OrderDetails from './pages/OrderDetails';
+//import OrderDetails from './pages/OrderDetails';
 import OrderPage from './pages/OrderPage';
 import Orders from './pages/user/Orders';
 import AdminOrder from './pages/admin/AdminOrder';
 import VendorOrders from './pages/vendor/VendorOrders';
 import Address from './pages/user/Address';
 import NewlyAddedProduct from './pages/NewlyAddedProduct';
+import Wishlist from './pages/Wishlist';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path="/order" element={<OrderPage />} />
         <Route path="/new-items" element={<NewlyAddedProduct />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />

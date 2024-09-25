@@ -43,7 +43,7 @@ function UserDashboard() {
                       </div>
                       <div className="flex items-center justify-center md:justify-start text-gray-600 mt-2">
                         <MdLocationOn className="text-xl mr-2" />
-                        <span>{auth?.user?.address}</span>
+                        <span>{auth?.user?.adddress}</span>
                       </div>
                     </div>
                   </div>

@@ -3,20 +3,27 @@ import { FaHeart } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/cart';
 import { toast } from 'react-toastify';
+import { useWishlist } from '../../context/wishlist';
 
 const ProductCard = ({ product, basePath, name }) => {
     const [cart, setCart] = useCart();
+    const [wishlist, setWishlist, isProductInWishlist, toggleWishlist] = useWishlist();
     const [isHeartFilled, setIsHeartFilled] = useState(false);
     const [isInCart, setIsInCart] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Check if product is already in cart or wishlist
         const productInCart = cart.find(item => item._id === product._id);
         setIsInCart(!!productInCart);
-    }, [cart, product._id]);
+
+        setIsHeartFilled(isProductInWishlist(product._id));
+    }, [cart, wishlist, product._id, isProductInWishlist]);
 
     const handleHeartClick = () => {
+        toggleWishlist(product);
         setIsHeartFilled(!isHeartFilled);
+        toast.success(isHeartFilled ? "Removed from Wishlist" : "Added to Wishlist");
     };
 
     const handleAddToCart = () => {
@@ -42,7 +49,6 @@ const ProductCard = ({ product, basePath, name }) => {
             {basePath ? (
                 <Link to={`${basePath}/products/${product.slug}`}>
                     <figure className="w-full overflow-hidden">
-                        {/* Responsive image sizes */}
                         <img
                             src={`${process.env.REACT_APP_BASE_URL}/api/product/product-photo/${product._id}`}
                             alt="card-img-top"
@@ -52,7 +58,6 @@ const ProductCard = ({ product, basePath, name }) => {
                 </Link>
             ) : (
                 <figure className="w-full overflow-hidden">
-                    {/* Responsive image sizes */}
                     <img
                         src={`${process.env.REACT_APP_BASE_URL}/api/product/product-photo/${product._id}`}
                         alt="card-img-top"

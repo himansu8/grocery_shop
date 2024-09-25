@@ -6,16 +6,19 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/auth';
 import { SearchProvider } from './context/serach';
 import { CartProvider } from './context/cart';
+import { WishlistProvider } from './context/wishlist';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthProvider>
     <SearchProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </CartProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </CartProvider>
+      </WishlistProvider>
     </SearchProvider>
   </AuthProvider>
 
