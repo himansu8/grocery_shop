@@ -39,6 +39,7 @@ import VendorOrders from './pages/vendor/VendorOrders';
 import Address from './pages/user/Address';
 import NewlyAddedProduct from './pages/NewlyAddedProduct';
 import Wishlist from './pages/Wishlist';
+import Vendororders from './pages/admin/Vendororders';
 
 function App() {
   return (
@@ -79,6 +80,7 @@ function App() {
           <Route path="/admin/users" element={<UsersData />} />
           <Route path="/admin/vendors" element={<VendorsData />} />
           <Route path="/admin/orders" element={<AdminOrder />} />
+          <Route path="/admin/vendor-orders" element={<Vendororders />} />
           <Route path="/admin/approvals" element={<ProductApproval />} />
 
 
@@ -99,7 +101,7 @@ function App() {
         </Route>
 
       </Routes>
-      <ToastContainer />
+      <ToastContainer position="bottom-center" autoClose={1000}/>
     </>
   );
 }

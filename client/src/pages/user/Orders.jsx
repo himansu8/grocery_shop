@@ -105,6 +105,9 @@ function Orders() {
         }
     };
 
+    // Sort orders by createdAt in descending order (newest first)
+    const sortedOrders = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     return (
         <Layout>
             <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 lg:mt-24 mt-28">
@@ -116,12 +119,13 @@ function Orders() {
                     <div className="w-full md:w-9/12 mt-8 md:mt-0">
                         <div className="bg-white shadow-lg rounded-lg p-4 md:p-8 mb-8">
                             <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-800 text-center">My Orders</h1>
+
                             {loading ? (
                                 <p className="text-center">Loading orders...</p>
-                            ) : orders.length === 0 ? (
+                            ) : sortedOrders.length === 0 ? (
                                 <p className="text-center">No orders found.</p>
                             ) : (
-                                orders.map((order) => (
+                                sortedOrders.map((order) => (
                                     <div key={order._id} className="border rounded-lg p-4 md:p-6 mb-6 shadow-lg">
                                         <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between">
                                             <h2 className="text-xl font-semibold mb-2 md:mb-0">Order #{order._id}</h2>
@@ -161,10 +165,9 @@ function Orders() {
                                                                 />
                                                             </Link>
                                                             <div>
-                                                                <Link to={`/single/products/${product.slug}`}>
-                                                                    <p className="font-medium text-blue-600 hover:underline">{product.name}</p>
-                                                                </Link>
-                                                                <p className="text-gray-500">Qty: {product.quantity} | Price: ₹{product.price}</p>
+                                                                <h4 className="font-medium">{product.name}</h4>
+                                                                <p className="text-gray-600">Quantity: {product.quantity}</p>
+                                                                <p className="text-gray-600">Price: ₹{product.price}</p>
                                                             </div>
                                                         </div>
                                                     </li>
@@ -172,60 +175,42 @@ function Orders() {
                                             </ul>
                                         </div>
 
-                                        <div className="mt-4">
-                                            <h3 className="font-semibold mb-2">Payment Details:</h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <p><strong>Transaction ID:</strong> {order.payment.transactionId}</p>
-                                                <p><strong>Payment Method:</strong> {order.payment.method}</p>
-                                                <p><strong>Total Amount:</strong> ₹{order.payment.amount}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 flex flex-col md:flex-row md:space-x-4">
-                                            <button
-                                                onClick={() => handleTrackOrder(order)}
-                                                className="flex items-center justify-center px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition duration-300"
+                                        <div className="flex justify-between items-center mt-4">
+                                            <button 
+                                                onClick={() => handleTrackOrder(order)} 
+                                                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
                                             >
-                                                <FaTruck className="mr-2" />
-                                                Track Order
+                                                Track Order <FaTruck />
                                             </button>
-                                            <button
-                                                onClick={() => handleDownloadInvoice(order)}
-                                                className="flex items-center justify-center px-4 py-2 bg-green text-white rounded-lg shadow-md hover:bg-green-600 transition duration-300 mt-4 md:mt-0"
+                                            <button 
+                                                onClick={() => handleDownloadInvoice(order)} 
+                                                className="bg-green text-white py-2 px-4 rounded hover:bg-green-600"
                                             >
-                                                <FaFileInvoice className="mr-2" />
-                                                Download Invoice
+                                                Download Invoice <FaFileInvoice />
                                             </button>
                                         </div>
                                     </div>
                                 ))
                             )}
                         </div>
+
+                        {showTracking && trackingInfo && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                                <div className="bg-white rounded-lg p-8 w-full max-w-md">
+                                    <h2 className="text-2xl font-semibold mb-4">Tracking Information</h2>
+                                    <p><strong>Status:</strong> {trackingInfo.order.status}</p>
+                                    <p><strong>Delivery Date:</strong> {new Date(trackingInfo.deliveryDate).toLocaleDateString()}</p>
+                                    <button 
+                                        onClick={() => setShowTracking(false)} 
+                                        className="mt-4 bg-red text-white py-2 px-4 rounded hover:bg-red-600"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-
-                {showTracking && selectedOrder && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2">
-                            <h3 className="text-xl font-semibold mb-4">Tracking Information for Order #{selectedOrder._id}</h3>
-                            {trackingInfo ? (
-                                                    <div>
-                                                        <p><strong>Status:</strong> {trackingInfo.order.status}</p>
-                                                        <p><strong>Estimated Delivery:</strong> {trackingInfo.estimatedDelivery}</p>
-                                                        {/* Add more tracking details as needed */}
-                                                    </div>
-                                                ) : (
-                                                    <p>Loading tracking information...</p>
-                                                )}
-                            <button
-                                onClick={() => setShowTracking(false)}
-                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
         </Layout>
     );

@@ -50,10 +50,11 @@ function VendorOrders() {
         setSelectedOrder(null);
     };
 
+    const sortedOrders = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     // Filter orders based on the selected status
-    const filteredOrders = orders.filter((order) => {
+    const filteredOrders = sortedOrders.filter((order) => {
         if (filterStatus === 'All') return true; // Show all orders if 'All' is selected
-        return order.status === filterStatus;
+        return sortedOrders.status === filterStatus;
     });
 
     return (
