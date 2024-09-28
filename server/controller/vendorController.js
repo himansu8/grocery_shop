@@ -116,6 +116,7 @@ export const loginVendor = async (req, res) => {
 export const getVendorById = async (req, res) => {
     try {
         const vendor = await vendorModel.findById(req.params.id);
+        //console.log(req.params.id)
         if (!vendor) {
             return res.status(404).json({
                 success: false,

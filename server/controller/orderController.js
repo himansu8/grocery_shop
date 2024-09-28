@@ -171,3 +171,35 @@ export const updateOrder = async (req,res) =>{
   }
 }
 
+// Get all orders related to the admin's vendors (sellers)
+export const getOrdersByVendors = async (req, res) => {
+  try {
+    const adminId = req.user._id;
+
+    // Find all orders where products are owned by sellers (vendors)
+    const orders = await orderModel.find({ 'products.owner': { $ne: adminId } })
+      .populate("products.productId", "name price slug")
+      .populate("products.owner", "name email") // Populating seller info
+      .populate("buyer", "name email"); // Populating buyer info
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found for your vendors.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    console.error("Error fetching orders for vendors:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching orders for vendors.",
+      error: error.message,
+    });
+  }
+};
+
