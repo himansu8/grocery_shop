@@ -1,5 +1,5 @@
 import express from 'express'
-import { fotgotpassword, loginController, registerController, updateProfileController, updateUserByIdController, viewAllUsersController } from '../controller/authController.js';
+import { fotgotpassword, googleAuth, loginController, registerController, updateProfileController, updateUserByIdController, viewAllUsersController } from '../controller/authController.js';
 import { authMiddleware, isAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -8,6 +8,8 @@ const router = express.Router();
 router.post("/register", registerController)
 
 router.post("/login", loginController)
+
+router.post("/auth/google", googleAuth)
 
 router.post("/fotgot-password", fotgotpassword)
 

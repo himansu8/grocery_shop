@@ -254,3 +254,61 @@ export const updateUserByIdController = async (req, res) => {
         });
     }
 }
+
+
+export async function googleAuth(req, res) {
+    try {
+        const user = await userModel.findOne({ email: req.body.email });
+        
+        // If user already exists, generate a token and return it
+        if (user) {
+            const token = JWT.sign({ _id: user._id, role: user.role }, config.PRIVATE_KEY);
+            return res.status(200).json({
+                success: true,
+                message: "Login successful",
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    address: user.address,
+                    role: user.role
+                },
+                token,
+            });
+        } else {
+            // Create a new user if they don't exist, specific to Google auth
+            const newUser = new userModel({
+                name: req.body.name || 'Not provided', // Make sure to set this
+                email: req.body.email,
+                // Not setting password, phone, address, and answer for Google auth
+                password: 'google-auth-password', // Can be a placeholder
+                phone: req.body.phone || 'Not provided', // Use default values
+                address: req.body.address || 'Not provided', // Use default values
+                answer: 'Not provided', // Use default values
+                fromGoogle: true, // You can also use this to flag users created via Google
+            });
+            const savedUser = await newUser.save();
+            const token = JWT.sign({ _id: savedUser._id, role: savedUser.role }, config.PRIVATE_KEY);
+            return res.status(200).json({
+                success: true,
+                message: "User created successfully",
+                user: {
+                    _id: savedUser._id,
+                    name: savedUser.name,
+                    email: savedUser.email,
+                    phone: savedUser.phone || 'Not provided',
+                    address: savedUser.address || 'Not provided',
+                },
+                token,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: "Error during Google authentication",
+            error: error.message || error,
+        });
+    }
+}
