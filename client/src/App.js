@@ -40,10 +40,12 @@ import Address from './pages/user/Address';
 import NewlyAddedProduct from './pages/NewlyAddedProduct';
 import Wishlist from './pages/Wishlist';
 import Vendororders from './pages/admin/Vendororders';
+import ScrollToTop from './ScrollToTop';
 
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Search />} />
@@ -63,12 +65,12 @@ function App() {
         <Route element={<UserPrivateRoute />}>
           <Route path="/dashboard/user" element={<UserDashboard />} />
           <Route path="/user/cart" element={<UserCart />} />
-          <Route path="/user/address" element={<Address/>} />
+          <Route path="/user/address" element={<Address />} />
           <Route path="/user/orders" element={<Orders />} />
           <Route path="/user/updateprofile" element={<UpdateProfile />} />
           {/* <Route path="/user/order/:id" element={<OrderDetails />} /> */}
 
-          
+
         </Route>
 
         <Route element={<AdminPrivateRoute />}>
@@ -88,20 +90,20 @@ function App() {
 
         </Route>
 
-        <Route element={<VendorPrivateRoute/>}>
-        <Route path="/dashboard/vendor" element={<VendorDashboard />} />
-        <Route path="/dashboard/vendor/addproduct" element={<CreateVendorProduct />} />
-        <Route path="/vendor/products" element={<VendorProducts />} />
-        <Route path="/vendor/orders" element={<VendorOrders />} />
-        <Route path="/vendor/products/:slug" element={<UpdateProducts />} />
-        <Route path="/vendor/cloneProduct" element={<CloneproductPage />} />
-        <Route path="/vendor/clone/products/:slug" element={<CloneProductDetailsPage />} />
+        <Route element={<VendorPrivateRoute />}>
+          <Route path="/dashboard/vendor" element={<VendorDashboard />} />
+          <Route path="/dashboard/vendor/addproduct" element={<CreateVendorProduct />} />
+          <Route path="/vendor/products" element={<VendorProducts />} />
+          <Route path="/vendor/orders" element={<VendorOrders />} />
+          <Route path="/vendor/products/:slug" element={<UpdateProducts />} />
+          <Route path="/vendor/cloneProduct" element={<CloneproductPage />} />
+          <Route path="/vendor/clone/products/:slug" element={<CloneProductDetailsPage />} />
 
 
         </Route>
 
       </Routes>
-      <ToastContainer position="bottom-center" autoClose={1000}/>
+      <ToastContainer position="bottom-center" autoClose={1000} />
     </>
   );
 }

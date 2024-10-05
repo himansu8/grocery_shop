@@ -5,6 +5,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/auth';
 import { FaGoogle, FaFacebook, FaGithub } from 'react-icons/fa';
+import { auth1, provider } from '../../firebase'
+import { signInWithPopup } from "firebase/auth"
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -18,8 +20,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = isVendor 
-        ? `${process.env.REACT_APP_BASE_URL}/api/vendor/login` 
+      const endpoint = isVendor
+        ? `${process.env.REACT_APP_BASE_URL}/api/vendor/login`
         : `${process.env.REACT_APP_BASE_URL}/api/auth/login`;
 
       const res = await axios.post(endpoint, { email, password });
@@ -44,6 +46,50 @@ function Login() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth1, provider);
+      const { displayName, email } = result.user;
+
+      // Send Google auth data to your backend
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/auth/google`, {
+        name: displayName,
+        email,
+        
+      });
+
+      // Assuming your response structure is similar to your regular login
+      if (res) {
+        toast.success(res.data.message);
+        setAuth({
+          ...auth,
+          user: res.data.user,
+          token: res.data.token,
+        });
+        //console.log(res.data)
+
+        // Save auth data to local storage
+        localStorage.setItem('auth', JSON.stringify(res.data));
+
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong with Google authentication');
+    }
+  };
+  //   const signInWithGoogle = async () => {
+  //     try {
+  //         const result = await signInWithPopup(auth1, provider);
+  //         // Handle result here (e.g., access user info)
+  //         console.log(result.user);
+  //     } catch (error) {
+  //         console.error(error.message);
+  //     }
+  // };
   return (
     <Layout>
       <div className="flex items-center justify-center min-h-screen lg:mt-12 mt-14">
@@ -52,23 +98,23 @@ function Login() {
         }}>
           <form onSubmit={handleSubmit}>
             <h3 className="font-bold text-xl text-center mb-6">Please Login!</h3>
-            
+
             {/* User/Vendor Toggle */}
             <div className="flex justify-center mb-4">
               <label className="mr-4">
-                <input 
-                  type="radio" 
-                  checked={!isVendor} 
-                  onChange={() => setIsVendor(false)} 
-                /> 
+                <input
+                  type="radio"
+                  checked={!isVendor}
+                  onChange={() => setIsVendor(false)}
+                />
                 User
               </label>
               <label>
-                <input 
-                  type="radio" 
-                  checked={isVendor} 
-                  onChange={() => setIsVendor(true)} 
-                /> 
+                <input
+                  type="radio"
+                  checked={isVendor}
+                  onChange={() => setIsVendor(true)}
+                />
                 Vendor
               </label>
             </div>
@@ -119,7 +165,8 @@ function Login() {
             </p>
           </form>
           <div className="flex justify-center mt-6 space-x-4">
-            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:text-white hover:bg-[#0ab538] transition-transform transform hover:scale-110">
+            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:text-white hover:bg-[#0ab538] transition-transform transform hover:scale-110"
+              onClick={signInWithGoogle}>
               <FaGoogle className="text-xl" />
             </button>
             <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:bg-[#0ab538] hover:text-white transition-transform transform hover:scale-110">

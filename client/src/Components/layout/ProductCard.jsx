@@ -86,7 +86,7 @@ const ProductCard = ({ product, basePath, name }) => {
                 </p>
 
                 <h5 className="text-md md:text-lg font-bold text-gray-900 mb-3">
-                    <span className="text-base text-gray-600">$</span>{product.price}
+                    <span className="text-base text-gray-600">Rs.</span>{product.price}
                 </h5>
 
                 {product.owner && name && (

@@ -5,8 +5,8 @@ import useCategory from '../../hooks/useCategory';
 
 function Navbar() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const categories = useCategory(); // Use the custom hook
-    const navigate = useNavigate(); // Use navigate
+    const categories = useCategory();
+    const navigate = useNavigate();
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -20,20 +20,20 @@ function Navbar() {
         navigate('/allproducts', {
             state: { selectedCategory: categoryId }
         });
-        closeSidebar(); // Close sidebar after navigation
+        closeSidebar();
     };
 
     return (
         <>
-            <header  className='max-w-screen-2xl mx-auto fixed xl:top-14 top-24 left-0 right-0 transition-all flex items-center duration-300 bg-green h-12 shadow-md'>
+            <header className='max-w-screen-2xl mx-auto fixed xl:top-14 top-24 left-0 right-0 transition-all flex items-center duration-300 bg-green h-12 shadow-md'>
                 <div className='navbar xl:px-24 flex justify-between items-center text-center'>
                     {/* "All Categories" Dropdown */}
                     <div className="navbar-start">
                         <Menu as="div" className="relative">
-                            <Menu.Button className="flex items-center gap-2 cursor-pointer hover:bg-[#0ab538] rounded-full p-2 text-gray-700">
+                            <Menu.Button className="flex items-center gap-2 cursor-pointer hover:bg-[#0ab538] rounded-full p-2 text-white">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
+                                    className="h-5 w-5 text-white"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -50,15 +50,15 @@ function Navbar() {
                             <Menu.Items className="absolute bg-base-100 rounded-box z-30 mt-2 w-52 p-2 shadow left-0 text-left cursor-pointer ">
                                 {categories.map((c) => (
                                     <Menu.Item key={c._id}>
-                                    {({ active }) => (
-                                        <div
-                                            className={`block px-4 py-2 ${active ? 'bg-gray-400' : ''}`}
-                                            onClick={() => handleCategoryClick(c._id)}
-                                        >
-                                            {c.name}
-                                        </div>
-                                    )}
-                                </Menu.Item>
+                                        {({ active }) => (
+                                            <div
+                                                className={`block px-4 py-2 ${active ? 'bg-gray-400 text-white' : 'text-gray-800 hover:bg-gray-100'}`}
+                                                onClick={() => handleCategoryClick(c._id)}
+                                            >
+                                                {c.name}
+                                            </div>
+                                        )}
+                                    </Menu.Item>
                                 ))}
                             </Menu.Items>
                         </Menu>
@@ -72,7 +72,7 @@ function Navbar() {
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
+                                className="h-5 w-5 text-white"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -84,24 +84,44 @@ function Navbar() {
                                     d="M4 6h16M4 12h16M4 18h7"
                                 />
                             </svg>
-                            <span className='font-medium text-gray-700'>Menu</span>
+                            <span className='font-medium text-white'>Menu</span>
                         </button>
                     </div>
 
                     {/* Navbar Items for Large Screens */}
                     <div className="navbar-center hidden md:flex">
                         <ul className="menu menu-horizontal p-0">
-                            <li><NavLink to='/' className='navbar-item' activeClassName='active'>Home</NavLink></li>
-                            <li><NavLink to='/offers' activeClassName='active'>Offers</NavLink></li>
-                            <li><NavLink to='/allproducts' activeClassName='active'>All Products</NavLink></li>
-                            <li><NavLink to='/new-items' activeClassName='active'>New Items</NavLink></li>
+                            <li>
+                                <NavLink to='/' className={({ isActive }) => isActive ? 'navbar-item text-gray-700 font-bold' : 'navbar-item text-white hover:text-gray-700'}>
+                                    Home
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to='/offers' className={({ isActive }) => isActive ? 'navbar-item text-gray-700 font-bold' : 'navbar-item text-white hover:text-gray-700'}>
+                                    Offers
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to='/allproducts' className={({ isActive }) => isActive ? 'navbar-item text-gray-700 font-bold' : 'navbar-item text-white hover:text-gray-700'}>
+                                    All Products
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to='/new-items' className={({ isActive }) => isActive ? 'navbar-item text-gray-700 font-bold' : 'navbar-item text-white hover:text-gray-700'}>
+                                    New Items
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
 
                     <div className="navbar-end hidden md:flex">
                         <ul className="menu menu-horizontal p-0">
-                            <li><Link to='/about'>About</Link></li>
-                            <li><Link to='/contact'>Contact</Link></li>
+                            <li>
+                                <Link to='/about' className='text-white hover:text-gray-700'>About</Link>
+                            </li>
+                            <li>
+                                <Link to='/contact' className='text-white hover:text-gray-700'>Contact</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -137,14 +157,14 @@ function Navbar() {
                     </button>
                     <div className='flex flex-col p-4'>
                         <h1 className='text-2xl font-bold mb-4'>
-                        <img src="/meralogo.jpg" alt="logo" className='w-full h-14 -ml-4'/>
+                            <img src="/meralogo.jpg" alt="logo" className='w-full h-14 -ml-4'/>
                         </h1>
                         <ul className='space-y-2'>
-                            <li><Link to='/offers' onClick={closeSidebar}>Offers</Link></li>
-                            <li><Link to='/allproducts' onClick={closeSidebar}>All Products</Link></li>
-                            <li><Link to='/new-items' onClick={closeSidebar}>New Items</Link></li>
-                            <li><Link to='/about' onClick={closeSidebar}>About</Link></li>
-                            <li><Link to='/contact' onClick={closeSidebar}>Contact</Link></li>
+                            <li><Link to='/offers' onClick={closeSidebar} className='text-gray-700 hover:text-green-600'>Offers</Link></li>
+                            <li><Link to='/allproducts' onClick={closeSidebar} className='text-gray-700 hover:text-green-600'>All Products</Link></li>
+                            <li><Link to='/new-items' onClick={closeSidebar} className='text-gray-700 hover:text-green-600'>New Items</Link></li>
+                            <li><Link to='/about' onClick={closeSidebar} className='text-gray-700 hover:text-green-600'>About</Link></li>
+                            <li><Link to='/contact' onClick={closeSidebar} className='text-gray-700 hover:text-green-600'>Contact</Link></li>
                         </ul>
                     </div>
                 </div>

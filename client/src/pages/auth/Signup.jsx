@@ -4,26 +4,19 @@ import {  useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaGoogle, FaFacebook, FaGithub } from 'react-icons/fa';
-
+import { auth1, provider } from '../../firebase'
+import { signInWithPopup } from "firebase/auth"
+import { useAuth } from '../../context/auth';
 function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  // const [securityQuestion, setSecurityQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const navigate = useNavigate();
+  const [auth, setAuth] = useAuth();
 
-
-  // Options for security questions
-  //   const securityQuestions = [
-  //     'What is your mother\'s maiden name?',
-  //     'What was the name of your first pet?',
-  //     'What is the name of the street you grew up on?',
-  //     'What was your childhood nickname?',
-  //     'What is your Favorite Game?',
-  //   ];
 
   // Form submission handler
   const handleSubmit = async (e) => {
@@ -35,11 +28,10 @@ function Signup() {
         name,
         phone,
         address,
-        // securityQuestion,
         answer,
       });
       if (res) {
-        toast.success(`${name} Register Successfully `);
+        toast.success(`${name} Registered Successfully`);
         navigate("/login");
       } else {
         toast.error(res.data.message);
@@ -50,18 +42,43 @@ function Signup() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth1, provider);
+      const { displayName, email } = result.user;
+
+      // Send Google auth data to your backend
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/auth/google`, {
+        name: displayName,
+        email,
+        
+      });
+
+      // Assuming your response structure is similar to your regular login
+      if (res) {
+        toast.success(res.data.message);
+        setAuth({
+          ...auth,
+          user: res.data.user,
+          token: res.data.token,
+        });
+        //console.log(res.data)
+
+        // Save auth data to local storage
+        localStorage.setItem('auth', JSON.stringify(res.data));
+        navigate('/');
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong with Google authentication');
+    }
+  };
   return (
     <Layout>
-      <div className="flex items-center justify-center min-h-screen md:mt-16 lg:mt-16 mt-20 px-4">
-        <div className="bg-white rounded-lg p-8 w-full max-w-md "
-          style={{
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 -4px 6px rgba(0, 0, 0, 0.1), 4px 0 6px rgba(0, 0, 0, 0.1), -4px 0 6px rgba(0, 0, 0, 0.1)',
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            width: '100%',
-            maxWidth: '24rem',
-          }}>
+      <div className="flex items-center justify-center min-h-screen mt-20 px-4">
+        <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg">
           <form onSubmit={handleSubmit}>
             <h3 className="font-bold text-xl text-center mb-6">Create An Account!</h3>
             <div className="mb-4">
@@ -94,37 +111,21 @@ function Signup() {
                 required
               />
             </div>
-            <div className="mb-6">
+            <div className="mb-4">
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                // placeholder="Answer to Security Question"
                 placeholder="Enter Your Address"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
-            {/* <div className="mb-4">
-              <select
-                id="securityQuestion"
-                value={securityQuestion}
-                onChange={(e) => setSecurityQuestion(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              >
-                <option value="">Select a Security Question</option>
-                {securityQuestions.map((question, index) => (
-                  <option key={index} value={question}>{question}</option>
-                ))}
-              </select>
-            </div> */}
-            <div className="mb-6">
+            <div className="mb-4">
               <input
                 type="text"
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
-                // placeholder="Answer to Security Question"
                 placeholder="What is your Favorite Game?"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
@@ -159,13 +160,14 @@ function Signup() {
             </p>
           </form>
           <div className="flex justify-center mt-6 space-x-4">
-            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:text-white hover:bg-[#0ab538] transition-transform transform hover:scale-110">
+            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:text-white transition-transform transform hover:scale-110"
+            onClick={signInWithGoogle}>
               <FaGoogle className="text-xl" />
             </button>
-            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:bg-[#0ab538] hover:text-white transition-transform transform hover:scale-110">
+            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:text-white transition-transform transform hover:scale-110">
               <FaFacebook className="text-xl" />
             </button>
-            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:bg-[#0ab538] hover:text-white transition-transform transform hover:scale-110">
+            <button className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 shadow-md hover:bg-green-500 hover:text-white transition-transform transform hover:scale-110">
               <FaGithub className="text-xl" />
             </button>
           </div>
