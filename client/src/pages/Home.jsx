@@ -137,7 +137,7 @@ function Home() {
           {/* Top Products Section */}
           <div className='mt-12 p-4'>
             <div className='flex items-center justify-between mb-6 px-4'>
-              <h2 className='text-3xl font-bold'>Top Rated Products</h2>
+              <h2 className='text-3xl font-bold mx-auto'>Top Rated Products</h2>
             </div>
             <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 md:grid-cols-4 gap-4'>
               {currentTopRatedProducts.map(product => (
@@ -165,7 +165,7 @@ function Home() {
             <>
               <div className='mt-12 p-4'>
                 <div className='flex items-center justify-between mb-6 px-4'>
-                  <h2 className='text-3xl font-bold'>Popular Categories</h2>
+                  <h2 className='text-3xl font-bold mx-auto'>Popular Categories</h2>
                 </div>
                 <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 md:grid-cols-4 gap-4'>
                   {currentPopularProducts.map(product => (
